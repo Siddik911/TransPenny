@@ -37,6 +37,20 @@ services:
     networks:
       - transpenny_network
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: transpenny_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    depends_on:
+      - db
+    networks:
+      - transpenny_network
+
 volumes:
   transpenny_db_data:
     name: transpenny_db_data
