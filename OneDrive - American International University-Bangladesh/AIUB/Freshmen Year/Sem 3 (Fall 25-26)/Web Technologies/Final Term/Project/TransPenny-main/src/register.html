@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - TransPenny</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        .register-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .register-header h1 {
+            color: #10B981;
+            font-size: 28px;
+            margin: 0 0 8px 0;
+        }
+        .register-header p {
+            color: #6B7280;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1F2937;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        .checkbox-group label {
+            margin: 0;
+        }
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            background: #10B981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        .btn-register:hover {
+            background: #059669;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #6B7280;
+            font-size: 14px;
+        }
+        .login-link a {
+            color: #10B981;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+        .alert.error {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+        .alert.success {
+            background: #DCFCE7;
+            color: #16A34A;
+            border: 1px solid #BBF7D0;
+        }
+        .role-specific {
+            display: none;
+        }
+        .role-specific.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <h1>TransPenny</h1>
+            <p>Create your account</p>
+        </div>
+
+        <div class="alert" id="alertMessage"></div>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="userType">User Type *</label>
+                <select id="userType" name="userType" required>
+                    <option value="">Select user type</option>
+                    <option value="donor">Donor</option>
+                    <option value="organization">Organization</option>
+                </select>
+            </div>
+
+            <div class="form-group role-specific" id="donorFields">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="isAnonymous" name="isAnonymous">
+                    <label for="isAnonymous">Register as anonymous donor</label>
+                </div>
+            </div>
+
+            <div class="form-group role-specific" id="orgFields">
+                <label for="description">Organization Description</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+
+            <button type="submit" class="btn-register">Register</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="/login.html">Sign in here</a>
+        </div>
+    </div>
+
+    <script>
+        const userTypeSelect = document.getElementById('userType');
+        const donorFields = document.getElementById('donorFields');
+        const orgFields = document.getElementById('orgFields');
+
+        userTypeSelect.addEventListener('change', function() {
+            donorFields.classList.remove('show');
+            orgFields.classList.remove('show');
+
+            if (this.value === 'donor') {
+                donorFields.classList.add('show');
+            } else if (this.value === 'organization') {
+                orgFields.classList.add('show');
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters long', 'error');
+                return;
+            }
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: password,
+                userType: document.getElementById('userType').value,
+                phoneNumber: document.getElementById('phoneNumber').value || null
+            };
+
+            if (formData.userType === 'donor') {
+                formData.isAnonymous = document.getElementById('isAnonymous').checked;
+            } else if (formData.userType === 'organization') {
+                formData.description = document.getElementById('description').value;
+            }
+
+            try {
+                const response = await fetch('/api/register.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('Registration successful! Redirecting to login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                } else {
+                    showAlert(result.message || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('An error occurred. Please try again.', 'error');
+            }
+        });
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type}`;
+            alertDiv.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>
