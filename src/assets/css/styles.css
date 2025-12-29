@@ -84,6 +84,22 @@ section h2 {
     border-color: #667eea;
 }
 
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+}
+
 /* Buttons */
 .btn {
     padding: 12px 30px;
@@ -138,37 +154,71 @@ section h2 {
     display: block;
 }
 
-/* Users List */
-.users-list {
-    display: grid;
-    gap: 15px;
+.message.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    display: block;
 }
 
-.user-card {
-    background: #f8f9fa;
-    padding: 20px;
+/* Donors List */
+.donors-list {
+    margin-top: 20px;
+}
+
+.donors-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     border-radius: 8px;
-    border-left: 4px solid #667eea;
-    transition: transform 0.2s;
+    overflow: hidden;
 }
 
-.user-card:hover {
-    transform: translateX(5px);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+.donors-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
 }
 
-.user-card h3 {
-    color: #667eea;
-    margin-bottom: 8px;
+.donors-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
 }
 
-.user-card p {
-    color: #666;
-    margin-bottom: 5px;
+.donors-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
 }
 
-.user-card small {
+.donors-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.donors-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.donors-table .amount {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.badge {
+    background: #ffc107;
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.no-data {
+    text-align: center;
     color: #999;
+    padding: 20px;
+    font-style: italic;
 }
 
 /* Loading State */
@@ -203,5 +253,14 @@ footer {
 
     section h2 {
         font-size: 1.5em;
+    }
+    
+    .donors-table {
+        font-size: 0.9em;
+    }
+    
+    .donors-table th,
+    .donors-table td {
+        padding: 8px;
     }
 }

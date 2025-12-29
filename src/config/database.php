@@ -1,64 +1,25 @@
 <?php
-/**
- * Database Configuration and Connection
- * 
- * This file establishes a secure database connection using environment variables
- * and provides a PDO instance for database operations.
- */
+// Database configuration
+define('DB_HOST', 'db'); // Docker service name from docker-compose.yml
+define('DB_NAME', 'donation_management');
+define('DB_USER', 'root'); // Change this to your MySQL username
+define('DB_PASS', 'root_pass_2025'); // Change this to your MySQL password
+define('DB_CHARSET', 'utf8mb4');
 
-class Database {
-    private $host;
-    private $db_name;
-    private $username;
-    private $password;
-    private $conn;
-
-    public function __construct() {
-        $this->host = getenv('DB_HOST') ?: 'db';
-        $this->db_name = getenv('DB_NAME') ?: 'transpenny_db';
-        $this->username = getenv('DB_USER') ?: 'transpenny_user';
-        $this->password = getenv('DB_PASSWORD') ?: 'transpenny_pass_2025';
-    }
-
-    /**
-     * Get database connection using PDO
-     * 
-     * @return PDO|null Database connection or null on failure
-     */
-    public function getConnection() {
-        $this->conn = null;
-
-        try {
-            $dsn = "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=utf8mb4";
-            $this->conn = new PDO($dsn, $this->username, $this->password);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        } catch(PDOException $e) {
-            error_log("Connection error: " . $e->getMessage());
-            return null;
-        }
-
-        return $this->conn;
-    }
-
-    /**
-     * Alternative: Get database connection using mysqli
-     * 
-     * @return mysqli|null Database connection or null on failure
-     */
-    public function getMysqliConnection() {
-        try {
-            $conn = new mysqli($this->host, $this->username, $this->password, $this->db_name);
-            
-            if ($conn->connect_error) {
-                throw new Exception("Connection failed: " . $conn->connect_error);
-            }
-            
-            $conn->set_charset("utf8mb4");
-            return $conn;
-        } catch(Exception $e) {
-            error_log("Connection error: " . $e->getMessage());
-            return null;
-        }
+function getDBConnection() {
+    try {
+        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ];
+        
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+        return $pdo;
+    } catch (PDOException $e) {
+        error_log("Database Connection Error: " . $e->getMessage());
+        throw new Exception("Database connection failed");
     }
 }
+?>

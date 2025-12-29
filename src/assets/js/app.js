@@ -1,29 +1,30 @@
 /**
- * TransPenny - Main Application JavaScript
- * Handles AJAX requests for user management
+ * TransPenny - Donor Registration Application
+ * Handles donor registration and display
  */
 
 // DOM Elements
-const userForm = document.getElementById('userForm');
+const donorForm = document.getElementById('donorForm');
 const formMessage = document.getElementById('formMessage');
-const loadUsersBtn = document.getElementById('loadUsers');
-const usersList = document.getElementById('usersList');
+const loadDonorsBtn = document.getElementById('loadDonors');
+const donorsList = document.getElementById('donorsList');
 
 // API Endpoints
-const API_BASE = '/api';
+const API_BASE = 'api';
 const ENDPOINTS = {
-    addUser: `${API_BASE}/add_user.php`,
-    getUsers: `${API_BASE}/get_users.php`
+    signUpDonor: `${API_BASE}/SignUpAsDonor.php`,
+    getDonors: `${API_BASE}/GetDonors.php`
 };
 
 /**
  * Display message to user
  * @param {string} message - Message text
- * @param {string} type - Message type (success/error)
+ * @param {string} type - Message type (success/error/info)
  */
 function showMessage(message, type = 'success') {
     formMessage.textContent = message;
     formMessage.className = `message ${type}`;
+    formMessage.style.display = 'block';
     
     // Auto-hide after 5 seconds
     setTimeout(() => {
@@ -32,156 +33,155 @@ function showMessage(message, type = 'success') {
 }
 
 /**
- * Make AJAX request
+ * Make AJAX request using fetch API
  * @param {string} url - Request URL
  * @param {string} method - HTTP method
  * @param {Object|null} data - Request data
  * @returns {Promise} Response promise
  */
-function makeRequest(url, method = 'GET', data = null) {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        
-        xhr.open(method, url, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        
-        xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 300) {
-                try {
-                    const response = JSON.parse(xhr.responseText);
-                    resolve(response);
-                } catch (e) {
-                    reject(new Error('Invalid JSON response'));
-                }
-            } else {
-                reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
-            }
-        };
-        
-        xhr.onerror = function() {
-            reject(new Error('Network error occurred'));
-        };
-        
-        xhr.ontimeout = function() {
-            reject(new Error('Request timeout'));
-        };
-        
-        xhr.timeout = 10000; // 10 second timeout
-        
-        if (data) {
-            xhr.send(JSON.stringify(data));
-        } else {
-            xhr.send();
+async function makeRequest(url, method = 'GET', data = null) {
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
         }
-    });
-}
-
-/**
- * Handle user form submission
- */
-userForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const formData = {
-        name: document.getElementById('name').value.trim(),
-        email: document.getElementById('email').value.trim()
     };
     
-    // Basic validation
-    if (!formData.name || !formData.email) {
-        showMessage('Please fill in all fields', 'error');
-        return;
+    if (data && method !== 'GET') {
+        options.body = JSON.stringify(data);
     }
     
     try {
-        const response = await makeRequest(ENDPOINTS.addUser, 'POST', formData);
+        const response = await fetch(url, options);
+        const result = await response.json();
         
-        if (response.success) {
-            showMessage(response.message, 'success');
-            userForm.reset();
-            // Automatically reload users list
-            loadUsers();
-        } else {
-            showMessage(response.message || 'Failed to add user', 'error');
+        if (!response.ok) {
+            throw new Error(result.message || 'Request failed');
         }
-    } catch (error) {
-        showMessage(`Error: ${error.message}`, 'error');
-        console.error('Add user error:', error);
-    }
-});
-
-/**
- * Load and display users
- */
-async function loadUsers() {
-    usersList.innerHTML = '<div class="loading">Loading users...</div>';
-    
-    try {
-        const response = await makeRequest(ENDPOINTS.getUsers, 'GET');
         
-        if (response.success) {
-            displayUsers(response.data);
-        } else {
-            usersList.innerHTML = `<p class="error">${response.message}</p>`;
-        }
+        return result;
     } catch (error) {
-        usersList.innerHTML = `<p class="error">Error loading users: ${error.message}</p>`;
-        console.error('Load users error:', error);
+        throw error;
     }
 }
 
 /**
- * Display users in the DOM
- * @param {Array} users - Array of user objects
+ * Validate password match
  */
-function displayUsers(users) {
-    if (!users || users.length === 0) {
-        usersList.innerHTML = '<p>No users found. Add some users to get started!</p>';
+function validatePasswords() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        showMessage('Passwords do not match!', 'error');
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Handle donor registration form submission
+ */
+async function handleDonorRegistration(event) {
+    event.preventDefault();
+    
+    // Validate passwords
+    if (!validatePasswords()) {
         return;
     }
     
-    const usersHTML = users.map(user => `
-        <div class="user-card">
-            <h3>${escapeHtml(user.name)}</h3>
-            <p><strong>Email:</strong> ${escapeHtml(user.email)}</p>
-            <small><strong>ID:</strong> ${user.id} | <strong>Joined:</strong> ${formatDate(user.created_at)}</small>
-        </div>
-    `).join('');
+    // Get form data
+    const formData = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phoneNumber: document.getElementById('phoneNumber').value.trim(),
+        password: document.getElementById('password').value,
+        isAnonymous: document.getElementById('isAnonymous').checked
+    };
     
-    usersList.innerHTML = usersHTML;
+    try {
+        showMessage('Registering...', 'info');
+        
+        const response = await makeRequest(ENDPOINTS.signUpDonor, 'POST', formData);
+        
+        if (response.success) {
+            showMessage('Registration successful! Welcome ' + formData.name, 'success');
+            donorForm.reset();
+            
+            // Auto-load donors list after successful registration
+            setTimeout(() => {
+                loadDonors();
+            }, 1000);
+        }
+    } catch (error) {
+        showMessage(error.message || 'Registration failed. Please try again.', 'error');
+    }
 }
 
 /**
- * Escape HTML to prevent XSS
- * @param {string} text - Text to escape
- * @returns {string} Escaped text
+ * Load and display donors list
  */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+async function loadDonors() {
+    try {
+        donorsList.innerHTML = '<p class="loading">Loading donors...</p>';
+        
+        const response = await makeRequest(ENDPOINTS.getDonors, 'GET');
+        
+        if (response.success && response.data) {
+            displayDonors(response.data);
+        }
+    } catch (error) {
+        donorsList.innerHTML = `<p class="error">Failed to load donors: ${error.message}</p>`;
+    }
 }
 
 /**
- * Format date string
- * @param {string} dateString - Date string
- * @returns {string} Formatted date
+ * Display donors in a table
+ * @param {Array} donors - Array of donor objects
  */
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+function displayDonors(donors) {
+    if (!donors || donors.length === 0) {
+        donorsList.innerHTML = '<p class="no-data">No donors registered yet.</p>';
+        return;
+    }
+    
+    const table = `
+        <table class="donors-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Total Donated</th>
+                    <th>Donations</th>
+                    <th>Registered</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${donors.map((donor, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${donor.name}${donor.isAnonymous ? ' <span class="badge">Anonymous</span>' : ''}</td>
+                        <td>${donor.email}</td>
+                        <td>${donor.phoneNumber}</td>
+                        <td class="amount">$${donor.totalDonated}</td>
+                        <td>${donor.donationCount}</td>
+                        <td>${new Date(donor.registeredAt).toLocaleDateString()}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    
+    donorsList.innerHTML = table;
 }
 
 // Event Listeners
-loadUsersBtn.addEventListener('click', loadUsers);
+donorForm.addEventListener('submit', handleDonorRegistration);
+loadDonorsBtn.addEventListener('click', loadDonors);
 
-// Load users on page load
-document.addEventListener('DOMContentLoaded', function() {
-    loadUsers();
+// Load donors on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadDonors();
 });
