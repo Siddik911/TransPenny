@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - TransPenny</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        h1 { color: #333; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 40px; }
+        .choice-buttons { display: flex; flex-direction: column; gap: 20px; }
+        button { padding: 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; font-weight: bold; }
+        button:hover { background: #0056b3; transform: translateY(-2px); transition: all 0.3s; }
+        .org-btn { background: #28a745; }
+        .org-btn:hover { background: #218838; }
+        .back-link { margin-top: 30px; }
+        .back-link a { color: #007bff; text-decoration: none; }
+        .back-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Choose Sign Up Type</h1>
+        <p>Select how you would like to register with TransPenny</p>
+        
+        <div class="choice-buttons">
+            <button onclick="location.href='signup-donor.html'">Sign Up as a Donor</button>
+            <button class="org-btn" onclick="location.href='signup-organization.html'">Sign Up as an Organization</button>
+        </div>
+        
+        <div class="back-link">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

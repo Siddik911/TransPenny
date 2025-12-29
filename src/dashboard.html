@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TransPenny</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f4f4f4; }
+        .navbar { background: #007bff; color: white; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .navbar h1 { display: inline-block; }
+        .navbar button { float: right; padding: 10px 20px; background: #fff; color: #007bff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .navbar button:hover { background: #f0f0f0; }
+        .container { max-width: 900px; margin: 40px auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .welcome-section { text-align: center; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; margin-bottom: 30px; }
+        .welcome-section h2 { margin-bottom: 10px; font-size: 2em; }
+        .info-card { background: #f8f9fa; padding: 20px; margin: 15px 0; border-left: 4px solid #007bff; border-radius: 4px; }
+        .info-card h3 { color: #333; margin-bottom: 10px; }
+        .info-card p { color: #666; margin: 5px 0; }
+        .role-badge { display: inline-block; padding: 5px 15px; background: #28a745; color: white; border-radius: 20px; font-size: 14px; margin-top: 10px; }
+        .role-badge.organization { background: #17a2b8; }
+        .role-badge.admin { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>TransPenny Dashboard</h1>
+        <button onclick="logout()">Logout</button>
+    </div>
+    
+    <div class="container">
+        <div class="welcome-section">
+            <h2 id="welcomeMessage">Welcome!</h2>
+            <p id="userEmail"></p>
+            <span id="roleBadge" class="role-badge"></span>
+        </div>
+        
+        <div class="info-card">
+            <h3>Account Information</h3>
+            <p><strong>Name:</strong> <span id="userName"></span></p>
+            <p><strong>Email:</strong> <span id="userEmailInfo"></span></p>
+            <p><strong>User Type:</strong> <span id="userType"></span></p>
+            <p><strong>Phone:</strong> <span id="userPhone"></span></p>
+            <p><strong>Account Status:</strong> <span id="accountStatus"></span></p>
+        </div>
+        
+        <div id="additionalInfo"></div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const userStr = sessionStorage.getItem('user');
+        if (!userStr) {
+            window.location.href = 'login.html';
+        }
+        
+        const user = JSON.parse(userStr);
+        
+        // Display user information
+        document.getElementById('welcomeMessage').textContent = `Welcome, ${user.name}!`;
+        document.getElementById('userEmail').textContent = user.email;
+        document.getElementById('userName').textContent = user.name;
+        document.getElementById('userEmailInfo').textContent = user.email;
+        document.getElementById('userType').textContent = user.userType.charAt(0).toUpperCase() + user.userType.slice(1);
+        document.getElementById('userPhone').textContent = user.phoneNumber || 'Not provided';
+        document.getElementById('accountStatus').textContent = user.isActive ? 'Active' : 'Inactive';
+        
+        // Set role badge
+        const roleBadge = document.getElementById('roleBadge');
+        roleBadge.textContent = user.userType.toUpperCase();
+        if (user.userType === 'organization') {
+            roleBadge.className = 'role-badge organization';
+        } else if (user.userType === 'admin') {
+            roleBadge.className = 'role-badge admin';
+        }
+        
+        // Display additional info based on user type
+        const additionalInfoDiv = document.getElementById('additionalInfo');
+        
+        if (user.userType === 'donor' && user.donorInfo) {
+            additionalInfoDiv.innerHTML = `
+                <div class="info-card">
+                    <h3>Donor Statistics</h3>
+                    <p><strong>Total Donated:</strong> $${parseFloat(user.donorInfo.totalDonated || 0).toFixed(2)}</p>
+                    <p><strong>Number of Donations:</strong> ${user.donorInfo.donationCount || 0}</p>
+                    <p><strong>Anonymous:</strong> ${user.donorInfo.isAnonymous ? 'Yes' : 'No'}</p>
+                    ${user.donorInfo.lastDonationAt ? `<p><strong>Last Donation:</strong> ${new Date(user.donorInfo.lastDonationAt).toLocaleDateString()}</p>` : ''}
+                </div>
+            `;
+        } else if (user.userType === 'organization' && user.orgInfo) {
+            additionalInfoDiv.innerHTML = `
+                <div class="info-card">
+                    <h3>Organization Details</h3>
+                    <p><strong>Verification Status:</strong> ${user.orgInfo.verificationStatus || 'Pending'}</p>
+                    <p><strong>Registration Number:</strong> ${user.orgInfo.registrationNumber || 'N/A'}</p>
+                    <p><strong>Total Received:</strong> $${parseFloat(user.orgInfo.totalReceived || 0).toFixed(2)}</p>
+                    <p><strong>Available Balance:</strong> $${parseFloat(user.orgInfo.availableBalance || 0).toFixed(2)}</p>
+                    ${user.orgInfo.website ? `<p><strong>Website:</strong> <a href="${user.orgInfo.website}" target="_blank">${user.orgInfo.website}</a></p>` : ''}
+                </div>
+                ${user.orgInfo.description ? `
+                <div class="info-card">
+                    <h3>Description</h3>
+                    <p>${user.orgInfo.description}</p>
+                </div>
+                ` : ''}
+            `;
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

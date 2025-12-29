@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Registration - TransPenny</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: #333; font-weight: bold; }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="password"] { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; 
+        }
+        input:focus { outline: none; border-color: #007bff; }
+        .checkbox-group { display: flex; align-items: center; }
+        .checkbox-group input { width: auto; margin-right: 10px; }
+        .checkbox-group label { font-weight: normal; }
+        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #0056b3; }
+        .message { padding: 15px; margin-top: 20px; border-radius: 4px; display: none; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        .back-link { margin-top: 20px; text-align: center; }
+        .back-link a { color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Register as a Donor</h1>
+        <p>Join TransPenny and start making transparent donations</p>
+        
+        <form id="donorForm">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number *</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="+1234567890">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required minlength="8" placeholder="Minimum 8 characters">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Re-enter password">
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="isAnonymous" name="isAnonymous">
+                <label for="isAnonymous">Register as anonymous donor</label>
+            </div>
+            
+            <button type="submit">Register</button>
+            
+            <div id="formMessage" class="message"></div>
+        </form>
+        
+        <div class="back-link">
+            <a href="signup-choice.html">← Back to Sign Up Options</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('donorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const messageDiv = document.getElementById('formMessage');
+            
+            if (password !== confirmPassword) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Passwords do not match!';
+                return;
+            }
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                password: password,
+                isAnonymous: document.getElementById('isAnonymous').checked
+            };
+            
+            try {
+                const response = await fetch('api/SignUpAsDonor.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = 'Registration successful! Redirecting to login...';
+                    setTimeout(() => location.href = 'login.html', 2000);
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = data.message || 'Registration failed. Please try again.';
+                }
+            } catch (error) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Network error. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>

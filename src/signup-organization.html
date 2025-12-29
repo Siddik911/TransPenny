@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Registration - TransPenny</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: #333; font-weight: bold; }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="password"], input[type="url"], textarea { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; 
+        }
+        textarea { min-height: 100px; resize: vertical; font-family: Arial, sans-serif; }
+        input:focus, textarea:focus { outline: none; border-color: #28a745; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #218838; }
+        .message { padding: 15px; margin-top: 20px; border-radius: 4px; display: none; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        .back-link { margin-top: 20px; text-align: center; }
+        .back-link a { color: #007bff; text-decoration: none; }
+        .note { font-size: 14px; color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Register as an Organization</h1>
+        <p>Join TransPenny to receive transparent donations and share impact stories</p>
+        
+        <form id="orgForm">
+            <div class="form-group">
+                <label for="name">Organization Name *</label>
+                <input type="text" id="name" name="name" required placeholder="Your organization name">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Organization Email *</label>
+                <input type="email" id="email" name="email" required placeholder="contact@organization.org">
+            </div>
+            
+            <div class="form-group">
+                <label for="phoneNumber">Contact Phone *</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="+1234567890">
+            </div>
+            
+            <div class="form-group">
+                <label for="registrationNumber">Registration Number</label>
+                <input type="text" id="registrationNumber" name="registrationNumber" placeholder="Official registration number (optional)">
+            </div>
+            
+            <div class="form-group">
+                <label for="website">Website</label>
+                <input type="url" id="website" name="website" placeholder="https://yourorganization.org">
+            </div>
+            
+            <div class="form-group">
+                <label for="address">Address *</label>
+                <textarea id="address" name="address" required placeholder="Full organization address"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <textarea id="description" name="description" required placeholder="Describe your organization's mission and activities"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required minlength="8" placeholder="Minimum 8 characters">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Re-enter password">
+            </div>
+            
+            <p class="note">* Your organization will need to be verified before you can receive donations.</p>
+            
+            <button type="submit">Register Organization</button>
+            
+            <div id="formMessage" class="message"></div>
+        </form>
+        
+        <div class="back-link">
+            <a href="signup-choice.html">← Back to Sign Up Options</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('orgForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const messageDiv = document.getElementById('formMessage');
+            
+            if (password !== confirmPassword) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Passwords do not match!';
+                return;
+            }
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                password: password,
+                registrationNumber: document.getElementById('registrationNumber').value,
+                website: document.getElementById('website').value,
+                address: document.getElementById('address').value,
+                description: document.getElementById('description').value
+            };
+            
+            try {
+                const response = await fetch('api/SignUpAsOrganization.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = 'Registration successful! Your organization is pending verification. Redirecting to login...';
+                    setTimeout(() => location.href = 'login.html', 3000);
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = data.message || 'Registration failed. Please try again.';
+                }
+            } catch (error) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Network error. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>

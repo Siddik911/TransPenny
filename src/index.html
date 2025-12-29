@@ -3,63 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransPenny - Donor Registration</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <title>TransPenny - Transparent Donation Management</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 10px; }
+        h2 { color: #555; margin-top: 30px; margin-bottom: 15px; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .header-text { color: #666; margin-bottom: 30px; font-size: 1.1em; }
+        .button-group { margin: 20px 0; }
+        button { padding: 12px 30px; margin: 10px 10px 10px 0; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .secondary-btn { background: #28a745; }
+        .secondary-btn:hover { background: #218838; }
+        .org-list, .story-list { margin: 20px 0; }
+        .org-item, .story-item { background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #007bff; border-radius: 4px; }
+        .org-item h3, .story-item h3 { color: #333; margin-bottom: 5px; }
+        .org-item p, .story-item p { color: #666; margin: 5px 0; }
+        .description-section { background: #e9ecef; padding: 20px; border-radius: 5px; margin: 20px 0; }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>TransPenny</h1>
-            <p>Transparent Donation Management System</p>
+            <p class="header-text">Transparent Donation Management System - Empowering Change Through Transparency</p>
         </header>
 
         <main>
-            <section class="form-section">
-                <h2>Register as a Donor</h2>
-                <form id="donorForm">
-                    <div class="form-group">
-                        <label for="name">Full Name:</label>
-                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address:</label>
-                        <input type="email" id="email" name="email" required placeholder="your.email@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="phoneNumber">Phone Number:</label>
-                        <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="+1234567890">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password:</label>
-                        <input type="password" id="password" name="password" required placeholder="Minimum 8 characters" minlength="8">
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirm Password:</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Re-enter password">
-                    </div>
-                    <div class="form-group checkbox-group">
-                        <label>
-                            <input type="checkbox" id="isAnonymous" name="isAnonymous">
-                            Register as anonymous donor
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Register</button>
-                </form>
-                <div id="formMessage" class="message"></div>
-            </section>
+            <div class="button-group">
+                <button onclick="location.href='signup-choice.html'">Sign Up</button>
+                <button onclick="location.href='login.html'" class="secondary-btn">Login</button>
+            </div>
 
-            <section class="donors-section">
-                <h2>Registered Donors</h2>
-                <button id="loadDonors" class="btn btn-secondary">Load Donors</button>
-                <div id="donorsList" class="donors-list"></div>
-            </section>
+            <div class="description-section">
+                <h2>About TransPenny</h2>
+                <p>TransPenny is a revolutionary platform that brings complete transparency to charitable donations. Track every penny donated, see real-time impact stories, and connect directly with organizations making a difference. Our mission is to restore trust in charitable giving through blockchain-level transparency and accountability.</p>
+            </div>
+
+            <h2>Active Organizations</h2>
+            <div class="org-list" id="orgList">
+                <p>Loading organizations...</p>
+            </div>
+
+            <h2>Impact Stories</h2>
+            <div class="story-list" id="storyList">
+                <p>Loading impact stories...</p>
+            </div>
         </main>
 
-        <footer>
+        <footer style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #ddd; text-align: center; color: #666;">
             <p>&copy; 2025 TransPenny Project | Transparent Donation Management</p>
         </footer>
     </div>
 
-    <script src="assets/js/app.js"></script>
+    <script>
+        // Load organizations
+        fetch('api/GetOrganizations.php')
+            .then(response => response.json())
+            .then(data => {
+                const orgList = document.getElementById('orgList');
+                if (data.success && data.data.length > 0) {
+                    orgList.innerHTML = data.data.map(org => `
+                        <div class="org-item">
+                            <h3>${org.name}</h3>
+                            <p><strong>Status:</strong> ${org.verificationStatus}</p>
+                            <p>${org.description || 'No description available'}</p>
+                            ${org.website ? `<p><strong>Website:</strong> ${org.website}</p>` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    orgList.innerHTML = '<p>No organizations found.</p>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('orgList').innerHTML = '<p>Failed to load organizations.</p>';
+            });
+
+        // Load impact stories
+        fetch('api/GetImpactStories.php')
+            .then(response => response.json())
+            .then(data => {
+                const storyList = document.getElementById('storyList');
+                if (data.success && data.data.length > 0) {
+                    storyList.innerHTML = data.data.map(story => `
+                        <div class="story-item">
+                            <h3>${story.title}</h3>
+                            <p>${story.content}</p>
+                            <p><strong>Organization:</strong> ${story.organizationName}</p>
+                            <p><strong>Total Funding:</strong> $${parseFloat(story.totalFunding).toFixed(2)}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    storyList.innerHTML = '<p>No impact stories available yet.</p>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('storyList').innerHTML = '<p>Failed to load impact stories.</p>';
+            });
+    </script>
 </body>
 </html>
