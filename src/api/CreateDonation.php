@@ -84,23 +84,23 @@ try {
     ]);
     
     // Update donor statistics
-    $stmt = $db->prepare("
-        UPDATE Donor 
-        SET totalDonated = totalDonated + ?,
-            donationCount = donationCount + 1,
-            lastDonationAt = NOW()
-        WHERE donorId = ?
-    ");
-    $stmt->execute([$amount, $input['donorId']]);
+    // $stmt = $db->prepare("
+    //     UPDATE Donor 
+    //     SET totalDonated = totalDonated + ?,
+    //         donationCount = donationCount + 1,
+    //         lastDonationAt = NOW()
+    //     WHERE donorId = ?
+    // ");
+    // $stmt->execute([$amount, $input['donorId']]);
     
-    // Update organization balance
-    $stmt = $db->prepare("
-        UPDATE Organization 
-        SET totalReceived = totalReceived + ?,
-            availableBalance = availableBalance + ?
-        WHERE organizationId = ?
-    ");
-    $stmt->execute([$amount, $amount, $input['organizationId']]);
+    // // Update organization balance
+    // $stmt = $db->prepare("
+    //     UPDATE Organization 
+    //     SET totalReceived = totalReceived + ?,
+    //         availableBalance = availableBalance + ?
+    //     WHERE organizationId = ?
+    // ");
+    // $stmt->execute([$amount, $amount, $input['organizationId']]);
     
     $db->commit();
     
