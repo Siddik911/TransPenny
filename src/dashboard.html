@@ -20,6 +20,92 @@
         .role-badge { display: inline-block; padding: 5px 15px; background: #28a745; color: white; border-radius: 20px; font-size: 14px; margin-top: 10px; }
         .role-badge.organization { background: #17a2b8; }
         .role-badge.admin { background: #dc3545; }
+        /* Donor Dashboard Styles */
+        .donor-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .action-btn { padding: 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.3s; text-align: center; }
+        .action-btn.primary { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; }
+        .action-btn.secondary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .action-btn.tertiary { background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%); color: white; }
+        .action-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .action-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        /* Modal Styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative; }
+        .modal-content h3 { margin-bottom: 20px; color: #333; }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #666; }
+        .close-btn:hover { color: #333; }
+        /* Step Indicator */
+        .step-indicator { display: flex; justify-content: center; margin-bottom: 25px; }
+        .step { width: 35px; height: 35px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #666; margin: 0 10px; position: relative; }
+        .step.active { background: #007bff; color: white; }
+        .step.completed { background: #28a745; color: white; }
+        .step-line { width: 50px; height: 3px; background: #ddd; align-self: center; }
+        .step-line.completed { background: #28a745; }
+        /* Org List */
+        .org-list { max-height: 300px; overflow-y: auto; }
+        .org-item { padding: 15px; border: 2px solid #eee; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+        .org-item:hover { border-color: #007bff; background: #f8f9ff; }
+        .org-item.selected { border-color: #28a745; background: #f0fff4; }
+        .org-item h4 { color: #333; margin-bottom: 5px; }
+        .org-item p { color: #666; font-size: 14px; margin: 3px 0; }
+        .org-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+        .org-badge.approved { background: #d4edda; color: #155724; }
+        .org-badge.pending { background: #fff3cd; color: #856404; }
+        /* Amount Selection */
+        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .amount-btn { padding: 15px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.2s; }
+        .amount-btn:hover { border-color: #007bff; }
+        .amount-btn.selected { border-color: #28a745; background: #f0fff4; color: #28a745; }
+        .custom-amount { margin-top: 15px; }
+        .custom-amount input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .custom-amount input:focus { outline: none; border-color: #007bff; }
+        /* Confirm Section */
+        .confirm-details { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .confirm-details p { margin: 8px 0; }
+        .confirm-details .amount { font-size: 24px; color: #28a745; font-weight: bold; }
+        /* Nav Buttons */
+        .modal-nav { display: flex; justify-content: space-between; margin-top: 20px; }
+        .nav-btn { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .nav-btn.back { background: #6c757d; color: white; }
+        .nav-btn.next { background: #007bff; color: white; }
+        .nav-btn.donate { background: #28a745; color: white; }
+        .nav-btn:hover { opacity: 0.9; }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* Donations Table */
+        .donations-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .donations-table th, .donations-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .donations-table th { background: #f8f9fa; font-weight: 600; }
+        .donations-table tr:hover { background: #f8f9fa; }
+        .status-badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; }
+        .status-badge.allocated { background: #cce5ff; color: #004085; }
+        .status-badge.partially_spent { background: #fff3cd; color: #856404; }
+        .status-badge.fully_spent { background: #d4edda; color: #155724; }
+        .no-data { text-align: center; color: #666; padding: 30px; }
+        .loading { text-align: center; color: #007bff; padding: 20px; }
+        .message { padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+        .message.success { background: #d4edda; color: #155724; }
+        .message.error { background: #f8d7da; color: #721c24; }
+        /* Impact Cards */
+        .impact-card { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .impact-card h4 { color: #333; margin-bottom: 10px; }
+        .impact-card .org-name { color: #667eea; font-size: 14px; margin-bottom: 8px; }
+        .impact-card .content { color: #555; font-size: 14px; line-height: 1.5; margin-bottom: 10px; }
+        .impact-card .meta { display: flex; justify-content: space-between; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; }
+        .impact-card .contribution { background: #e8f5e9; color: #2e7d32; padding: 5px 10px; border-radius: 15px; font-weight: bold; }
+        /* Leaderboard Styles */
+        .leaderboard-table { width: 100%; border-collapse: collapse; }
+        .leaderboard-table th, .leaderboard-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .leaderboard-table th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .leaderboard-table tr:hover { background: #f8f9fa; }
+        .rank-badge { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+        .rank-1 { background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%); }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%); }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%); }
+        .rank-other { background: #667eea; }
+        .donor-name { font-weight: 600; }
+        .donor-name.anonymous { font-style: italic; color: #888; }
+        .donation-amount { color: #28a745; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -45,6 +131,113 @@
         </div>
         
         <div id="additionalInfo"></div>
+        
+        <!-- Donor Actions Section -->
+        <div id="donorActionsSection" style="display: none;">
+            <div class="info-card">
+                <h3>Quick Actions</h3>
+                <div class="donor-actions">
+                    <button class="action-btn primary" onclick="openDonateModal()">💚 Donate Now</button>
+                    <button class="action-btn secondary" onclick="loadMyDonations()">📋 My Donations</button>
+                    <button class="action-btn tertiary" onclick="loadMyImpacts()">⭐ My Impacts</button>
+                    <button class="action-btn secondary" onclick="loadLeaderboard()">🏆 Leaderboard</button>
+                </div>
+            </div>
+            
+            <!-- My Donations Section -->
+            <div id="myDonationsSection" style="display: none;">
+                <div class="info-card">
+                    <h3>My Donation History</h3>
+                    <div id="donationsContent"></div>
+                </div>
+            </div>
+            
+            <!-- My Impacts Section -->
+            <div id="myImpactsSection" style="display: none;">
+                <div class="info-card">
+                    <h3>⭐ My Impacts</h3>
+                    <p style="color: #666; margin-bottom: 15px;">See how your donations are making a difference!</p>
+                    <div id="impactsContent"></div>
+                </div>
+            </div>
+            
+            <!-- Leaderboard Section -->
+            <div id="leaderboardSection" style="display: none;">
+                <div class="info-card">
+                    <h3>🏆 Top Donors Leaderboard</h3>
+                    <p style="color: #666; margin-bottom: 15px;">Our most generous contributors</p>
+                    <div id="leaderboardContent"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Organization Actions Section -->
+        <div id="orgActionsSection" style="display: none;">
+            <div class="info-card">
+                <h3>💰 Received Donations</h3>
+                <p style="color: #666; margin-bottom: 15px;">Donations from generous donors to your organization</p>
+                <div id="receivedDonationsContent"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Donation Modal -->
+    <div id="donateModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeDonateModal()">&times;</span>
+            <h3>Make a Donation</h3>
+            
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">1</div>
+                <div class="step-line" id="line1"></div>
+                <div class="step" id="step2">2</div>
+                <div class="step-line" id="line2"></div>
+                <div class="step" id="step3">3</div>
+            </div>
+            
+            <div id="modalMessage"></div>
+            
+            <!-- Step 1: Select Organization -->
+            <div id="donateStep1" class="donate-step">
+                <h4 style="margin-bottom: 15px;">Select an Organization</h4>
+                <div id="orgListContainer" class="org-list">
+                    <p class="loading">Loading organizations...</p>
+                </div>
+            </div>
+            
+            <!-- Step 2: Select Amount -->
+            <div id="donateStep2" class="donate-step" style="display: none;">
+                <h4 style="margin-bottom: 15px;">Select Donation Amount</h4>
+                <div class="amount-grid">
+                    <button class="amount-btn" data-amount="5">$5</button>
+                    <button class="amount-btn" data-amount="10">$10</button>
+                    <button class="amount-btn" data-amount="25">$25</button>
+                    <button class="amount-btn" data-amount="50">$50</button>
+                    <button class="amount-btn" data-amount="100">$100</button>
+                    <button class="amount-btn" data-amount="250">$250</button>
+                </div>
+                <div class="custom-amount">
+                    <input type="number" id="customAmount" placeholder="Or enter custom amount ($)" min="1" step="0.01">
+                </div>
+            </div>
+            
+            <!-- Step 3: Confirm -->
+            <div id="donateStep3" class="donate-step" style="display: none;">
+                <h4 style="margin-bottom: 15px;">Confirm Your Donation</h4>
+                <div class="confirm-details">
+                    <p><strong>Organization:</strong> <span id="confirmOrg"></span></p>
+                    <p><strong>Amount:</strong> <span id="confirmAmount" class="amount"></span></p>
+                    <p><strong>Payment Method:</strong> Card</p>
+                </div>
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <div class="modal-nav">
+                <button class="nav-btn back" id="backBtn" style="visibility: hidden;">Back</button>
+                <button class="nav-btn next" id="nextBtn" disabled>Next</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -91,10 +284,10 @@
             additionalInfoDiv.innerHTML = `
                 <div class="info-card">
                     <h3>Organization Details</h3>
-                    <p><strong>Verification Status:</strong> ${user.orgInfo.verificationStatus || 'Pending'}</p>
+                    <p><strong>Verification Status:</strong> <span id="orgVerificationStatus">${user.orgInfo.verificationStatus || 'Pending'}</span></p>
                     <p><strong>Registration Number:</strong> ${user.orgInfo.registrationNumber || 'N/A'}</p>
-                    <p><strong>Total Received:</strong> $${parseFloat(user.orgInfo.totalReceived || 0).toFixed(2)}</p>
-                    <p><strong>Available Balance:</strong> $${parseFloat(user.orgInfo.availableBalance || 0).toFixed(2)}</p>
+                    <p><strong>Total Received:</strong> $<span id="orgTotalReceived">${parseFloat(user.orgInfo.totalReceived || 0).toFixed(2)}</span></p>
+                    <p><strong>Available Balance:</strong> $<span id="orgAvailableBalance">${parseFloat(user.orgInfo.availableBalance || 0).toFixed(2)}</span></p>
                     ${user.orgInfo.website ? `<p><strong>Website:</strong> <a href="${user.orgInfo.website}" target="_blank">${user.orgInfo.website}</a></p>` : ''}
                 </div>
                 ${user.orgInfo.description ? `
@@ -104,11 +297,477 @@
                 </div>
                 ` : ''}
             `;
+            // Show org actions section
+            document.getElementById('orgActionsSection').style.display = 'block';
+            // Auto-load received donations and refresh org data
+            refreshOrgData();
         }
         
         function logout() {
             sessionStorage.removeItem('user');
             window.location.href = 'index.html';
+        }
+        
+        // Show donor actions if user is a donor
+        if (user.userType === 'donor') {
+            document.getElementById('donorActionsSection').style.display = 'block';
+        }
+        
+        // Donation Modal State
+        let currentStep = 1;
+        let selectedOrg = null;
+        let selectedAmount = null;
+        let organizations = [];
+        
+        // Attach button event listeners (prevents duplicate binding)
+        document.getElementById('nextBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            nextStep();
+        }, { once: false });
+        
+        document.getElementById('backBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            prevStep();
+        });
+        
+        // Open Donate Modal
+        function openDonateModal() {
+            document.getElementById('donateModal').classList.add('active');
+            currentStep = 1;
+            selectedOrg = null;
+            selectedAmount = null;
+            isProcessingDonation = false; // Reset flag when opening modal
+            updateStepUI();
+            loadOrganizations();
+        }
+        
+        // Close Donate Modal
+        function closeDonateModal() {
+            document.getElementById('donateModal').classList.remove('active');
+            document.getElementById('modalMessage').innerHTML = '';
+            isProcessingDonation = false; // Reset flag when closing modal
+        }
+        
+        // Load Organizations
+        async function loadOrganizations() {
+            const container = document.getElementById('orgListContainer');
+            container.innerHTML = '<p class="loading">Loading organizations...</p>';
+            
+            try {
+                const response = await fetch('api/GetOrganizations.php');
+                const result = await response.json();
+                
+                if (result.success && result.data.length > 0) {
+                    organizations = result.data;
+                    container.innerHTML = organizations.map(org => `
+                        <div class="org-item" data-id="${org.organizationId}" onclick="selectOrg('${org.organizationId}')">
+                            <h4>${org.name}</h4>
+                            <p>${org.description || 'No description available'}</p>
+                            <span class="org-badge ${org.verificationStatus}">${org.verificationStatus}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p class="no-data">No organizations available at the moment.</p>';
+                }
+            } catch (error) {
+                container.innerHTML = '<p class="no-data">Failed to load organizations.</p>';
+            }
+        }
+        
+        // Select Organization
+        function selectOrg(orgId) {
+            document.querySelectorAll('.org-item').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`.org-item[data-id="${orgId}"]`).classList.add('selected');
+            selectedOrg = organizations.find(o => o.organizationId === orgId);
+            document.getElementById('nextBtn').disabled = false;
+        }
+        
+        // Amount Button Handlers
+        document.querySelectorAll('.amount-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedAmount = parseFloat(this.dataset.amount);
+                document.getElementById('customAmount').value = '';
+                document.getElementById('nextBtn').disabled = false;
+            });
+        });
+        
+        document.getElementById('customAmount').addEventListener('input', function() {
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+            selectedAmount = parseFloat(this.value) || null;
+            document.getElementById('nextBtn').disabled = !selectedAmount || selectedAmount <= 0;
+        });
+        
+        // Step Navigation
+        let isProcessingDonation = false;
+        
+        function nextStep() {
+            if (currentStep < 3) {
+                currentStep++;
+                updateStepUI();
+            } else {
+                // Prevent double submission at this level too
+                if (isProcessingDonation) return;
+                processDonation();
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepUI();
+            }
+        }
+        
+        function updateStepUI() {
+            // Update step indicators
+            for (let i = 1; i <= 3; i++) {
+                const stepEl = document.getElementById('step' + i);
+                stepEl.classList.remove('active', 'completed');
+                if (i < currentStep) stepEl.classList.add('completed');
+                if (i === currentStep) stepEl.classList.add('active');
+            }
+            document.getElementById('line1').classList.toggle('completed', currentStep > 1);
+            document.getElementById('line2').classList.toggle('completed', currentStep > 2);
+            
+            // Show/hide steps
+            document.getElementById('donateStep1').style.display = currentStep === 1 ? 'block' : 'none';
+            document.getElementById('donateStep2').style.display = currentStep === 2 ? 'block' : 'none';
+            document.getElementById('donateStep3').style.display = currentStep === 3 ? 'block' : 'none';
+            
+            // Update buttons
+            document.getElementById('backBtn').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (currentStep === 1) {
+                nextBtn.textContent = 'Next';
+                nextBtn.className = 'nav-btn next';
+                nextBtn.disabled = !selectedOrg;
+            } else if (currentStep === 2) {
+                nextBtn.textContent = 'Next';
+                nextBtn.className = 'nav-btn next';
+                nextBtn.disabled = !selectedAmount || selectedAmount <= 0;
+            } else {
+                nextBtn.textContent = 'Donate $' + selectedAmount.toFixed(2);
+                nextBtn.className = 'nav-btn donate';
+                nextBtn.disabled = false;
+                document.getElementById('confirmOrg').textContent = selectedOrg.name;
+                document.getElementById('confirmAmount').textContent = '$' + selectedAmount.toFixed(2);
+            }
+        }
+        
+        // Process Donation
+        async function processDonation() {
+            // Prevent double submission
+            if (isProcessingDonation) return;
+            isProcessingDonation = true;
+            
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = true;
+            nextBtn.textContent = 'Processing...';
+            
+            try {
+                const response = await fetch('api/CreateDonation.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        donorId: user.donorInfo.donorId,
+                        organizationId: selectedOrg.organizationId,
+                        amount: selectedAmount,
+                        paymentMethod: 'card'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update local user data
+                    user.donorInfo.totalDonated = result.data.donorStats.totalDonated;
+                    user.donorInfo.donationCount = result.data.donorStats.donationCount;
+                    user.donorInfo.lastDonationAt = result.data.donorStats.lastDonationAt;
+                    sessionStorage.setItem('user', JSON.stringify(user));
+                    
+                    document.getElementById('modalMessage').innerHTML = `<div class="message success">🎉 Donation successful! Transaction: ${result.data.transactionReference}</div>`;
+                    
+                    // Update displayed stats
+                    updateDonorStats();
+                    
+                    setTimeout(() => {
+                        closeDonateModal();
+                        isProcessingDonation = false;
+                    }, 2000);
+                } else {
+                    document.getElementById('modalMessage').innerHTML = `<div class="message error">${result.message}</div>`;
+                    nextBtn.disabled = false;
+                    nextBtn.textContent = 'Donate $' + selectedAmount.toFixed(2);
+                    isProcessingDonation = false;
+                }
+            } catch (error) {
+                document.getElementById('modalMessage').innerHTML = '<div class="message error">Failed to process donation. Please try again.</div>';
+                nextBtn.disabled = false;
+                nextBtn.textContent = 'Donate $' + selectedAmount.toFixed(2);
+                isProcessingDonation = false;
+            }
+        }
+        
+        // Update displayed donor stats
+        function updateDonorStats() {
+            const additionalInfoDiv = document.getElementById('additionalInfo');
+            if (user.userType === 'donor' && user.donorInfo) {
+                additionalInfoDiv.innerHTML = `
+                    <div class="info-card">
+                        <h3>Donor Statistics</h3>
+                        <p><strong>Total Donated:</strong> $${parseFloat(user.donorInfo.totalDonated || 0).toFixed(2)}</p>
+                        <p><strong>Number of Donations:</strong> ${user.donorInfo.donationCount || 0}</p>
+                        <p><strong>Anonymous:</strong> ${user.donorInfo.isAnonymous ? 'Yes' : 'No'}</p>
+                        ${user.donorInfo.lastDonationAt ? `<p><strong>Last Donation:</strong> ${new Date(user.donorInfo.lastDonationAt).toLocaleDateString()}</p>` : ''}
+                    </div>
+                `;
+            }
+        }
+        
+        // Load My Donations
+        async function loadMyDonations() {
+            // Hide other sections
+            document.getElementById('myImpactsSection').style.display = 'none';
+            document.getElementById('leaderboardSection').style.display = 'none';
+            
+            const section = document.getElementById('myDonationsSection');
+            const content = document.getElementById('donationsContent');
+            section.style.display = 'block';
+            content.innerHTML = '<p class="loading">Loading your donations...</p>';
+            
+            try {
+                const response = await fetch(`api/GetDonorDonations.php?donorId=${user.donorInfo.donorId}`);
+                const result = await response.json();
+                
+                if (result.success && result.data.length > 0) {
+                    content.innerHTML = `
+                        <p style="margin-bottom:15px;"><strong>Total Donations:</strong> ${result.count} | <strong>Total Amount:</strong> $${result.totalAmount.toFixed(2)}</p>
+                        <table class="donations-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Organization</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${result.data.map(d => `
+                                    <tr>
+                                        <td>${new Date(d.donatedAt).toLocaleDateString()}</td>
+                                        <td>${d.organizationName}</td>
+                                        <td>$${parseFloat(d.amountTotal).toFixed(2)}</td>
+                                        <td><span class="status-badge ${d.status}">${d.status.replace('_', ' ')}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    content.innerHTML = '<p class="no-data">You have not made any donations yet. Click "Donate Now" to get started!</p>';
+                }
+            } catch (error) {
+                content.innerHTML = '<p class="no-data">Failed to load donations.</p>';
+            }
+        }
+        
+        // Load My Impacts
+        async function loadMyImpacts() {
+            // Hide other sections
+            document.getElementById('myDonationsSection').style.display = 'none';
+            document.getElementById('leaderboardSection').style.display = 'none';
+            
+            const section = document.getElementById('myImpactsSection');
+            const content = document.getElementById('impactsContent');
+            section.style.display = 'block';
+            content.innerHTML = '<p class="loading">Loading your impact stories...</p>';
+            
+            try {
+                const response = await fetch(`api/GetDonorImpacts.php?donorId=${user.donorInfo.donorId}`);
+                const result = await response.json();
+                
+                if (result.success && result.data.length > 0) {
+                    content.innerHTML = `
+                        <p style="margin-bottom:15px;"><strong>Impact Stories:</strong> ${result.count} | <strong>Your Total Contribution:</strong> $${result.totalContribution.toFixed(2)}</p>
+                        ${result.data.map(impact => `
+                            <div class="impact-card">
+                                <div class="org-name">🏢 ${impact.organizationName}</div>
+                                <h4>${impact.title}</h4>
+                                <div class="content">${impact.content}</div>
+                                <div class="meta">
+                                    <span>📅 ${new Date(impact.publishedAt).toLocaleDateString()}</span>
+                                    <span class="contribution">Your contribution: $${parseFloat(impact.yourContribution).toFixed(2)}</span>
+                                </div>
+                                ${impact.geoTag ? `<div style="margin-top:8px;font-size:12px;color:#888;">📍 ${impact.geoTag}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    content.innerHTML = `
+                        <p class="no-data">
+                            No impact stories yet.<br><br>
+                            Impact stories appear when organizations use your donations and share how they made a difference. 
+                            Keep donating and check back soon! 💚
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                content.innerHTML = '<p class="no-data">Failed to load impact stories.</p>';
+            }
+        }
+        
+        // Load Leaderboard
+        async function loadLeaderboard() {
+            // Hide other sections
+            document.getElementById('myDonationsSection').style.display = 'none';
+            document.getElementById('myImpactsSection').style.display = 'none';
+            
+            const section = document.getElementById('leaderboardSection');
+            const content = document.getElementById('leaderboardContent');
+            section.style.display = 'block';
+            content.innerHTML = '<p class="loading">Loading leaderboard...</p>';
+            
+            try {
+                const response = await fetch('api/GetLeaderboard.php');
+                const result = await response.json();
+                
+                if (result.success && result.data.length > 0) {
+                    content.innerHTML = `
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Donor</th>
+                                    <th>Total Donated</th>
+                                    <th>Donations</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${result.data.map(donor => `
+                                    <tr>
+                                        <td>
+                                            <span class="rank-badge ${donor.rank <= 3 ? 'rank-' + donor.rank : 'rank-other'}">
+                                                ${donor.rank}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="donor-name ${donor.isAnonymous ? 'anonymous' : ''}">
+                                                ${donor.rank === 1 ? '👑 ' : ''}${donor.displayName}
+                                            </span>
+                                        </td>
+                                        <td class="donation-amount">$${parseFloat(donor.totalDonated).toFixed(2)}</td>
+                                        <td>${donor.donationCount} donation${donor.donationCount !== 1 ? 's' : ''}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        ${user.donorInfo && user.donorInfo.totalDonated > 0 ? `
+                            <div style="margin-top:20px;padding:15px;background:#f0f7ff;border-radius:8px;text-align:center;">
+                                <strong>Your Stats:</strong> $${parseFloat(user.donorInfo.totalDonated).toFixed(2)} donated across ${user.donorInfo.donationCount} donation(s)
+                            </div>
+                        ` : ''}
+                    `;
+                } else {
+                    content.innerHTML = '<p class="no-data">No donations yet. Be the first on the leaderboard!</p>';
+                }
+            } catch (error) {
+                content.innerHTML = '<p class="no-data">Failed to load leaderboard.</p>';
+            }
+        }
+        
+        // Refresh Organization Data (fetches latest from server)
+        async function refreshOrgData() {
+            if (!user.orgInfo || !user.orgInfo.organizationId) return;
+            
+            try {
+                // Fetch latest org data from GetOrganizations API
+                const response = await fetch('api/GetOrganizations.php');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const orgData = result.data.find(o => o.organizationId === user.orgInfo.organizationId);
+                    if (orgData) {
+                        // Update local data
+                        user.orgInfo.verificationStatus = orgData.verificationStatus;
+                        user.orgInfo.totalReceived = orgData.totalReceived;
+                        user.orgInfo.availableBalance = orgData.availableBalance;
+                        sessionStorage.setItem('user', JSON.stringify(user));
+                        
+                        // Update UI
+                        const statusEl = document.getElementById('orgVerificationStatus');
+                        if (statusEl) {
+                            statusEl.textContent = orgData.verificationStatus;
+                            statusEl.style.color = orgData.verificationStatus === 'approved' ? '#28a745' : 
+                                                   orgData.verificationStatus === 'rejected' ? '#dc3545' : '#ffc107';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('Failed to refresh org data');
+            }
+            
+            // Load received donations
+            loadReceivedDonations();
+        }
+        
+        // Load Received Donations (for Organizations)
+        async function loadReceivedDonations() {
+            if (!user.orgInfo || !user.orgInfo.organizationId) return;
+            
+            const content = document.getElementById('receivedDonationsContent');
+            content.innerHTML = '<p class="loading">Loading received donations...</p>';
+            
+            try {
+                const response = await fetch(`api/GetOrgDonations.php?organizationId=${user.orgInfo.organizationId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update displayed totals
+                    document.getElementById('orgTotalReceived').textContent = result.totalReceived.toFixed(2);
+                    document.getElementById('orgAvailableBalance').textContent = result.availableBalance.toFixed(2);
+                    
+                    if (result.data.length > 0) {
+                        content.innerHTML = `
+                            <p style="margin-bottom:15px;">
+                                <strong>Total Donations:</strong> ${result.count} | 
+                                <strong>Total Received:</strong> $${result.totalReceived.toFixed(2)} |
+                                <strong>Available:</strong> $${result.availableBalance.toFixed(2)}
+                            </p>
+                            <table class="donations-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Donor</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Payment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${result.data.map(d => `
+                                        <tr>
+                                            <td>${new Date(d.donatedAt).toLocaleDateString()}</td>
+                                            <td>${d.donorName}</td>
+                                            <td class="donation-amount">$${parseFloat(d.amountTotal).toFixed(2)}</td>
+                                            <td><span class="status-badge ${d.status}">${d.status.replace('_', ' ')}</span></td>
+                                            <td>${d.paymentMethod}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                    } else {
+                        content.innerHTML = '<p class="no-data">No donations received yet. Share your organization profile to start receiving donations!</p>';
+                    }
+                } else {
+                    content.innerHTML = '<p class="no-data">Failed to load donations.</p>';
+                }
+            } catch (error) {
+                content.innerHTML = '<p class="no-data">Failed to load donations.</p>';
+            }
         }
     </script>
 </body>
