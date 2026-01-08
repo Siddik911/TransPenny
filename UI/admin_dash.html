@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TransPenny – Admin Dashboard</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    background:#f4f7f5;
+    color:#2f4f3f;
+}
+
+/* HEADER */
+header{
+    background:#fff;
+    padding:16px 50px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+
+.logo{
+    font-size:22px;
+    font-weight:bold;
+    color:#3a7d5c;
+}
+
+nav a{
+    margin-left:20px;
+    text-decoration:none;
+    color:#2f4f3f;
+}
+
+.admin-btn{
+    background:#3a7d5c;
+    color:#fff;
+    padding:8px 16px;
+    border-radius:6px;
+}
+
+/* HERO */
+.hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:60px;
+    background:#eef5f1;
+}
+
+.hero-text h1{
+    font-size:36px;
+    margin-bottom:10px;
+}
+
+.hero-text p{
+    margin-bottom:20px;
+}
+
+.hero-text button{
+    background:#3a7d5c;
+    color:#fff;
+    border:none;
+    padding:12px 22px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.hero-img{
+    width:380px;
+    height:260px;
+    background:#cfe3d6;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#3a7d5c;
+}
+
+/* STATS */
+.stats{
+    display:flex;
+    gap:20px;
+    padding:40px 60px;
+}
+
+.stat{
+    background:#fff;
+    flex:1;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+.stat h3{
+    font-size:16px;
+    margin-bottom:10px;
+}
+
+.stat span{
+    font-size:26px;
+    font-weight:bold;
+    color:#3a7d5c;
+}
+
+/* SECTION */
+.section{
+    padding:0 60px 40px;
+}
+
+.section h2{
+    margin-bottom:15px;
+}
+
+/* BUTTONS */
+.green{
+    background:#3a7d5c;
+    color:#fff;
+    border:none;
+    padding:8px 14px;
+    border-radius:6px;
+}
+
+.red{
+    background:#d9534f;
+    color:#fff;
+    border:none;
+    padding:8px 14px;
+    border-radius:6px;
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+th,td{
+    padding:14px;
+    text-align:left;
+}
+
+th{
+    background:#f0f4f2;
+}
+
+/* LIST CARDS */
+.cards{
+    display:flex;
+    gap:20px;
+}
+
+.card{
+    background:#fff;
+    flex:1;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+.card-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+/* FOOTER */
+footer{
+    text-align:center;
+    padding:20px;
+    background:#fff;
+    color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">TransPenny</div>
+    <nav>
+        <a href="#">Requests</a>
+        <a href="#">Organizations</a>
+        <a href="#">Users</a>
+        <a href="#">Leaderboard</a>
+        <a href="#" class="admin-btn">Admin</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-text">
+        <h1>Welcome to the Admin Dashboard</h1>
+        <p>Manage donors, organizations, and requests easily.</p>
+        <button>View Requests</button>
+    </div>
+    <div class="hero-img">Illustration</div>
+</section>
+
+<section class="stats">
+    <div class="stat">
+        <h3>Pending Requests</h3>
+        <span>5</span>
+    </div>
+    <div class="stat">
+        <h3>Total Organizations</h3>
+        <span>37</span>
+    </div>
+    <div class="stat">
+        <h3>Total Users</h3>
+        <span>1,205</span>
+    </div>
+    <div class="stat">
+        <h3>Total Donations</h3>
+        <span>$85,240</span>
+    </div>
+</section>
+
+<section class="section">
+    <h2>Pending Requests</h2>
+    <table>
+        <tr>
+            <th>Request Type</th>
+            <th>Organization/User</th>
+            <th>Requested By</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+        <tr>
+            <td>New Organization</td>
+            <td>EcoClean Initiative</td>
+            <td>sarah@email.com</td>
+            <td>April 12, 2024</td>
+            <td>
+                <button class="green">Approve</button>
+                <button class="red">Deny</button>
+            </td>
+        </tr>
+        <tr>
+            <td>New Impact</td>
+            <td>Immanacia Fund</td>
+            <td>john@email.com</td>
+            <td>April 10, 2024</td>
+            <td>
+                <button class="green">Approve</button>
+                <button class="red">Deny</button>
+            </td>
+        </tr>
+    </table>
+</section>
+
+<section class="section">
+    <div class="cards">
+        <div class="card">
+            <h2>Organizations</h2>
+            <div class="card-item">
+                <div>
+                    <strong>EcoGreen Initiative</strong><br>
+                    $60,300 • 255 Donors
+                </div>
+                <button class="green">View</button>
+            </div>
+            <div class="card-item">
+                <div>
+                    <strong>Hope & Health Foundation</strong><br>
+                    $38,200 • 184 Donors
+                </div>
+                <button class="green">View</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Top Donors</h2>
+            <div class="card-item">
+                <div>
+                    <strong>Sarah Collins</strong><br>
+                    $2,500 • 15 Donations
+                </div>
+                <button class="green">Manage</button>
+            </div>
+            <div class="card-item">
+                <div>
+                    <strong>Michael Rivera</strong><br>
+                    $1,850 • 3 Donations
+                </div>
+                <button class="green">Manage</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    © 2026 TransPenny – Admin Panel
+</footer>
+
+</body>
+</html>

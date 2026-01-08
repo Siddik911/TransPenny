@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Organization Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f5;
+      color: #333;
+    }
+
+    .topbar {
+      background: #eaf3ef;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      color: #2f6f55;
+    }
+
+    .menu a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #555;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    .org-header {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .org-header h1 {
+      margin: 0;
+      color: #2f6f55;
+    }
+
+    .buttons {
+      margin: 15px 0;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .green {
+      background: #2f6f55;
+      color: white;
+    }
+
+    .red {
+      background: #e05353;
+      color: white;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .card h3 {
+      margin: 5px 0;
+      color: #2f6f55;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      background: #eaf3ef;
+    }
+
+    .action-btn {
+      padding: 6px 10px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .edit {
+      background: #2f6f55;
+      color: white;
+    }
+
+    .delete {
+      background: #e05353;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <h2>TransPenny</h2>
+    <div class="menu">
+      <a href="#">Dashboard</a>
+      <a href="#">Withdrawals</a>
+      <a href="#">Impacts</a>
+      <a href="#">Top Donors</a>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="org-header">
+      <h1>EcoGreen Initiative ✔</h1>
+      <p>Founded in 1994 — Supporting tree planting, clean water and renewable energy.</p>
+
+      <div class="buttons">
+        <button class="btn green">Create Impact</button>
+        <button class="btn red">Delete Impact</button>
+      </div>
+
+      <div class="stats">
+        <div class="card">
+          <p>Total Raised</p>
+          <h3>$38,750</h3>
+        </div>
+        <div class="card">
+          <p>Total Withdrawn</p>
+          <h3>$500</h3>
+        </div>
+        <div class="card">
+          <p>Reserves</p>
+          <h3>$38,250</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Created Impacts</h2>
+      <table>
+        <tr>
+          <th>Impact</th>
+          <th>Raised</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+        <tr>
+          <td>Tree Planting Campaign</td>
+          <td>$10,000</td>
+          <td>April 5, 2024</td>
+          <td>
+            <button class="action-btn edit">Edit</button>
+            <button class="action-btn delete">Delete</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Clean Water Access</td>
+          <td>$8,750</td>
+          <td>March 21, 2024</td>
+          <td>
+            <button class="action-btn edit">Edit</button>
+            <button class="action-btn delete">Delete</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+
+</body>
+</html>
