@@ -174,6 +174,14 @@
         <!-- Organization Actions Section -->
         <div id="orgActionsSection" style="display: none;">
             <div class="info-card">
+                <h3>🏢 Organization Management</h3>
+                <div class="donor-actions">
+                    <button class="action-btn primary" onclick="window.location.href='org-dashboard.html'">📊 Organization Dashboard</button>
+                    <button class="action-btn secondary" onclick="loadReceivedDonations()">💰 View Donations</button>
+                </div>
+            </div>
+            
+            <div class="info-card" id="receivedDonationsCard" style="display: none;">
                 <h3>💰 Received Donations</h3>
                 <p style="color: #666; margin-bottom: 15px;">Donations from generous donors to your organization</p>
                 <div id="receivedDonationsContent"></div>
@@ -301,6 +309,20 @@
             document.getElementById('orgActionsSection').style.display = 'block';
             // Auto-load received donations and refresh org data
             refreshOrgData();
+        } else if (user.userType === 'admin' && user.adminInfo) {
+            additionalInfoDiv.innerHTML = `
+                <div class="info-card">
+                    <h3>Admin Information</h3>
+                    <p><strong>Admin Role:</strong> ${user.adminInfo.role?.replace('_', ' ').toUpperCase() || 'Admin'}</p>
+                    <p><strong>Assigned At:</strong> ${user.adminInfo.assignedAt ? new Date(user.adminInfo.assignedAt).toLocaleDateString() : 'N/A'}</p>
+                </div>
+                <div class="info-card">
+                    <h3>🛡️ Admin Actions</h3>
+                    <div class="donor-actions">
+                        <button class="action-btn primary" onclick="window.location.href='admin-dashboard.html'" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">🛡️ Admin Dashboard</button>
+                    </div>
+                </div>
+            `;
         }
         
         function logout() {
@@ -589,10 +611,61 @@
                 const response = await fetch(`api/GetDonorImpacts.php?donorId=${user.donorInfo.donorId}`);
                 const result = await response.json();
                 
-                if (result.success && result.data.length > 0) {
-                    content.innerHTML = `
-                        <p style="margin-bottom:15px;"><strong>Impact Stories:</strong> ${result.count} | <strong>Your Total Contribution:</strong> $${result.totalContribution.toFixed(2)}</p>
-                        ${result.data.map(impact => `
+                if (result.success && result.data && result.data.length > 0) {
+                    // Separate withdrawals and impact stories
+                    const withdrawals = result.data.filter(item => item.type === 'withdrawal');
+                    const stories = result.data.filter(item => item.type === 'impact_story');
+                    
+                    let html = `
+                        <p style="margin-bottom:15px;">
+                            <strong>Withdrawals from your donations:</strong> ${withdrawals.length} | 
+                            <strong>Impact Stories:</strong> ${stories.length} | 
+                            <strong>Total Contribution:</strong> $${result.totalContribution.toFixed(2)}
+                        </p>
+                    `;
+                    
+                    // Show withdrawals first (how donations were spent)
+                    if (withdrawals.length > 0) {
+                        html += `<h4 style="margin: 20px 0 15px; color: #667eea;">💰 How Your Donations Were Used</h4>`;
+                        html += withdrawals.map(w => `
+                            <div class="impact-card" style="border-left: 4px solid ${
+                                w.status === 'approved' || w.status === 'completed' ? '#28a745' : 
+                                w.status === 'pending' ? '#ffc107' : '#dc3545'
+                            };">
+                                <div class="org-name">🏢 ${w.organizationName}</div>
+                                <h4>${w.title}</h4>
+                                <div class="content">${w.content}</div>
+                                <div class="meta">
+                                    <span>📅 ${new Date(w.publishedAt).toLocaleDateString()}</span>
+                                    <span class="contribution">Your contribution: $${parseFloat(w.yourContribution).toFixed(2)}</span>
+                                </div>
+                                <div style="margin-top:8px;">
+                                    <span style="padding: 3px 10px; border-radius: 12px; font-size: 12px; background: ${
+                                        w.status === 'approved' || w.status === 'completed' ? '#d4edda' : 
+                                        w.status === 'pending' ? '#fff3cd' : '#f8d7da'
+                                    }; color: ${
+                                        w.status === 'approved' || w.status === 'completed' ? '#155724' : 
+                                        w.status === 'pending' ? '#856404' : '#721c24'
+                                    };">
+                                        ${w.status === 'completed' ? '✅ Completed' : 
+                                          w.status === 'approved' ? '✅ Approved' : 
+                                          w.status === 'pending' ? '⏳ Pending' : '❌ ' + w.status}
+                                    </span>
+                                </div>
+                                ${w.impactStory ? `
+                                    <div style="margin-top:10px;padding:10px;background:#f0f7ff;border-radius:6px;">
+                                        <strong>📖 Impact Story:</strong> ${w.impactStory.title}
+                                        <p style="font-size:13px;color:#555;margin-top:5px;">${w.impactStory.content ? w.impactStory.content.substring(0, 150) + '...' : ''}</p>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('');
+                    }
+                    
+                    // Show impact stories
+                    if (stories.length > 0) {
+                        html += `<h4 style="margin: 20px 0 15px; color: #667eea;">⭐ Impact Stories</h4>`;
+                        html += stories.map(impact => `
                             <div class="impact-card">
                                 <div class="org-name">🏢 ${impact.organizationName}</div>
                                 <h4>${impact.title}</h4>
@@ -603,19 +676,21 @@
                                 </div>
                                 ${impact.geoTag ? `<div style="margin-top:8px;font-size:12px;color:#888;">📍 ${impact.geoTag}</div>` : ''}
                             </div>
-                        `).join('')}
-                    `;
+                        `).join('');
+                    }
+                    
+                    content.innerHTML = html;
                 } else {
                     content.innerHTML = `
                         <p class="no-data">
-                            No impact stories yet.<br><br>
-                            Impact stories appear when organizations use your donations and share how they made a difference. 
+                            No impact data yet.<br><br>
+                            Impact information appears when organizations withdraw funds from your donations or share impact stories. 
                             Keep donating and check back soon! 💚
                         </p>
                     `;
                 }
             } catch (error) {
-                content.innerHTML = '<p class="no-data">Failed to load impact stories.</p>';
+                content.innerHTML = '<p class="no-data">Failed to load impact data.</p>';
             }
         }
         
@@ -708,14 +783,14 @@
             } catch (error) {
                 console.log('Failed to refresh org data');
             }
-            
-            // Load received donations
-            loadReceivedDonations();
         }
         
         // Load Received Donations (for Organizations)
         async function loadReceivedDonations() {
             if (!user.orgInfo || !user.orgInfo.organizationId) return;
+            
+            // Show the donations card
+            document.getElementById('receivedDonationsCard').style.display = 'block';
             
             const content = document.getElementById('receivedDonationsContent');
             content.innerHTML = '<p class="loading">Loading received donations...</p>';

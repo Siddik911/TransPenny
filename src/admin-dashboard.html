@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TransPenny</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f4f4f4; }
+        .navbar { background: #dc3545; color: white; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { display: inline-block; }
+        .navbar-buttons { display: flex; gap: 10px; }
+        .navbar button { padding: 10px 20px; background: #fff; color: #dc3545; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .navbar button:hover { background: #f0f0f0; }
+        .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
+        
+        /* Welcome Section */
+        .welcome-section { text-align: center; padding: 30px; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; border-radius: 8px; margin-bottom: 30px; }
+        .welcome-section h2 { margin-bottom: 10px; font-size: 2em; }
+        .role-badge { display: inline-block; padding: 5px 15px; background: rgba(255,255,255,0.2); color: white; border-radius: 20px; font-size: 14px; margin-top: 10px; }
+        
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        .stat-card h3 { font-size: 2em; color: #dc3545; margin-bottom: 5px; }
+        .stat-card p { color: #666; font-size: 14px; }
+        .stat-card.highlight { background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); }
+        .stat-card.highlight h3, .stat-card.highlight p { color: #333; }
+        
+        /* Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; background: white; color: #333; }
+        .tab-btn:hover { background: #e9ecef; }
+        .tab-btn.active { background: #dc3545; color: white; }
+        
+        /* Tab Content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Info Card */
+        .info-card { background: white; padding: 25px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .info-card h3 { color: #333; margin-bottom: 15px; border-bottom: 2px solid #dc3545; padding-bottom: 10px; }
+        
+        /* Tables */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .data-table th { background: #f8f9fa; font-weight: 600; color: #333; }
+        .data-table tr:hover { background: #f8f9fa; }
+        .data-table .amount { color: #28a745; font-weight: bold; }
+        
+        /* Status Badges */
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .status-badge.pending { background: #fff3cd; color: #856404; }
+        .status-badge.approved { background: #d4edda; color: #155724; }
+        .status-badge.rejected { background: #f8d7da; color: #721c24; }
+        
+        /* Action Buttons */
+        .action-btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; margin-right: 5px; transition: all 0.2s; }
+        .action-btn.approve { background: #28a745; color: white; }
+        .action-btn.approve:hover { background: #218838; }
+        .action-btn.reject { background: #dc3545; color: white; }
+        .action-btn.reject:hover { background: #c82333; }
+        .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        /* Buttons */
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .btn-primary { background: #dc3545; color: white; }
+        .btn-primary:hover { background: #c82333; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        
+        /* Messages */
+        .message { padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .message.info { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; }
+        .modal-content h3 { margin-bottom: 20px; color: #333; }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #666; }
+        .close-btn:hover { color: #333; }
+        
+        /* Form */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        
+        /* Loading */
+        .loading { text-align: center; color: #dc3545; padding: 30px; }
+        .no-data { text-align: center; color: #666; padding: 30px; }
+        
+        /* Rank Badge */
+        .rank-badge { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+        .rank-1 { background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%); }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%); }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%); }
+        .rank-other { background: #dc3545; }
+        
+        /* Leaderboard Container */
+        .leaderboard-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) {
+            .leaderboard-container { grid-template-columns: 1fr; }
+        }
+        
+        /* Org Details */
+        .org-details { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; font-size: 13px; }
+        .org-details p { margin: 5px 0; color: #666; }
+        .org-details strong { color: #333; }
+        
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .pagination button { padding: 8px 16px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; }
+        .pagination button:hover { background: #f0f0f0; }
+        .pagination button.active { background: #dc3545; color: white; border-color: #dc3545; }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🛡️ Admin Dashboard</h1>
+        <div class="navbar-buttons">
+            <button onclick="window.location.href='dashboard.html'">← Back to Profile</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h2 id="adminName">Admin Dashboard</h2>
+            <p>System Management & Organization Validation</p>
+            <span id="roleBadge" class="role-badge">ADMIN</span>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card highlight">
+                <h3 id="statPendingOrgs">0</h3>
+                <p>Pending Validations</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="statTotalOrgs">0</h3>
+                <p>Total Organizations</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="statTotalDonors">0</h3>
+                <p>Total Donors</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="statTotalDonations">$0.00</h3>
+                <p>Total Platform Donations</p>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('validation')">⏳ Pending Validations</button>
+            <button class="tab-btn" onclick="showTab('withdrawals')">💳 Withdrawals</button>
+            <button class="tab-btn" onclick="showTab('organizations')">🏢 Organizations</button>
+            <button class="tab-btn" onclick="showTab('donors')">👥 Donors</button>
+            <button class="tab-btn" onclick="showTab('leaderboard')">🏆 Leaderboard</button>
+        </div>
+        
+        <!-- Validation Tab -->
+        <div id="validationTab" class="tab-content active">
+            <div class="info-card">
+                <h3>⏳ Organizations Awaiting Validation</h3>
+                <div id="validationMessage"></div>
+                <div id="pendingOrgsContent">
+                    <p class="loading">Loading pending organizations...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Withdrawals Tab -->
+        <div id="withdrawalsTab" class="tab-content">
+            <div class="info-card">
+                <h3>💳 Withdrawal Requests</h3>
+                <div style="margin-bottom: 15px;">
+                    <label style="margin-right: 10px;">Filter:</label>
+                    <select id="withdrawalStatusFilter" onchange="loadWithdrawals()" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div id="withdrawalMessage"></div>
+                <div id="withdrawalsContent">
+                    <p class="loading">Loading withdrawals...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Organizations Tab -->
+        <div id="organizationsTab" class="tab-content">
+            <div class="info-card">
+                <h3>🏢 All Organizations</h3>
+                <div id="orgsContent">
+                    <p class="loading">Loading organizations...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Donors Tab -->
+        <div id="donorsTab" class="tab-content">
+            <div class="info-card">
+                <h3>👥 All Donors</h3>
+                <div id="donorsContent">
+                    <p class="loading">Loading donors...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Leaderboard Tab -->
+        <div id="leaderboardTab" class="tab-content">
+            <div class="leaderboard-container">
+                <div class="info-card">
+                    <h3>🏆 Top Donors</h3>
+                    <div id="donorLeaderboardContent">
+                        <p class="loading">Loading donor leaderboard...</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>🏢 Top Organizations</h3>
+                    <div id="orgLeaderboardContent">
+                        <p class="loading">Loading organization leaderboard...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Validation Modal -->
+    <div id="validationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeValidationModal()">&times;</span>
+            <h3 id="modalTitle">Validate Organization</h3>
+            <div id="modalOrgDetails"></div>
+            <div class="form-group">
+                <label for="validationRemarks">Remarks (Optional)</label>
+                <textarea id="validationRemarks" placeholder="Enter any remarks or reasons for your decision..."></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeValidationModal()">Cancel</button>
+                <button class="action-btn reject" style="padding: 12px 24px; font-size: 14px;" onclick="processValidation('reject')">Reject</button>
+                <button class="action-btn approve" style="padding: 12px 24px; font-size: 14px;" onclick="processValidation('approve')">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get user from session
+        let user = JSON.parse(sessionStorage.getItem('user'));
+        let adminId = null;
+        
+        // Redirect if not logged in or not admin
+        if (!user || user.userType !== 'admin') {
+            alert('Access denied. Admin privileges required.');
+            window.location.href = 'login.html';
+        } else {
+            adminId = user.adminInfo?.adminId;
+            document.getElementById('adminName').textContent = `Welcome, ${user.name}`;
+            document.getElementById('roleBadge').textContent = user.adminInfo?.role?.toUpperCase().replace('_', ' ') || 'ADMIN';
+        }
+        
+        let selectedOrg = null;
+        
+        // Tab Navigation
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load data for the tab
+            if (tabName === 'validation') loadPendingOrganizations();
+            else if (tabName === 'withdrawals') loadWithdrawals();
+            else if (tabName === 'organizations') loadAllOrganizations();
+            else if (tabName === 'donors') loadAllDonors();
+            else if (tabName === 'leaderboard') loadLeaderboards();
+        }
+        
+        // Load Withdrawals
+        async function loadWithdrawals() {
+            const container = document.getElementById('withdrawalsContent');
+            container.innerHTML = '<p class="loading">Loading withdrawals...</p>';
+            
+            const status = document.getElementById('withdrawalStatusFilter').value;
+            
+            try {
+                const response = await fetch(`api/GetPendingWithdrawals.php?adminId=${adminId}&status=${status}`);
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = `
+                        <div style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <strong>Summary:</strong> 
+                            Pending: $${data.summary.totalPending.toFixed(2)} | 
+                            Approved: $${data.summary.totalApproved.toFixed(2)} | 
+                            Rejected: $${data.summary.totalRejected.toFixed(2)}
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Organization</th>
+                                    <th>Amount</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(w => `
+                                    <tr>
+                                        <td>${formatDate(w.requestedAt)}</td>
+                                        <td>
+                                            <strong>${escapeHtml(w.organizationName)}</strong>
+                                            <br><small style="color: #888;">${escapeHtml(w.organizationEmail)}</small>
+                                        </td>
+                                        <td class="amount">$${parseFloat(w.amount).toFixed(2)}</td>
+                                        <td>${escapeHtml(w.purpose.substring(0, 40))}${w.purpose.length > 40 ? '...' : ''}</td>
+                                        <td><span class="status-badge ${w.status}">${w.status}</span></td>
+                                        <td>
+                                            ${w.status === 'pending' ? `
+                                                <button class="action-btn approve" onclick="processWithdrawal('${w.withdrawalId}', 'approve', '${escapeHtml(w.organizationName)}', ${w.amount})">✓ Approve</button>
+                                                <button class="action-btn reject" onclick="processWithdrawal('${w.withdrawalId}', 'reject', '${escapeHtml(w.organizationName)}', ${w.amount})">✗ Reject</button>
+                                            ` : `
+                                                <small style="color: #888;">
+                                                    ${w.processedByName ? 'By: ' + escapeHtml(w.processedByName) : ''}
+                                                    ${w.processedAt ? '<br>' + formatDate(w.processedAt) : ''}
+                                                </small>
+                                            `}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = `<p class="no-data">No ${status === 'all' ? '' : status + ' '}withdrawals found.</p>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<p class="message error">Error loading withdrawals: ${error.message}</p>`;
+            }
+        }
+        
+        // Process Withdrawal (Approve/Reject)
+        async function processWithdrawal(withdrawalId, action, orgName, amount) {
+            const actionText = action === 'approve' ? 'approve' : 'reject';
+            const remarks = prompt(`Enter remarks for ${actionText}ing withdrawal of $${amount.toFixed(2)} from ${orgName}:`, '');
+            
+            if (remarks === null) return; // User cancelled
+            
+            const messageDiv = document.getElementById('withdrawalMessage');
+            
+            try {
+                const response = await fetch('api/ProcessWithdrawal.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        adminId: adminId,
+                        withdrawalId: withdrawalId,
+                        action: action,
+                        remarks: remarks
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    messageDiv.innerHTML = `<div class="message success">${result.message}</div>`;
+                    loadWithdrawals();
+                    loadStats();
+                } else {
+                    messageDiv.innerHTML = `<div class="message error">${result.message}</div>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Load Stats
+        async function loadStats() {
+            try {
+                // Load organizations count
+                const orgsRes = await fetch('api/GetOrganizations.php');
+                const orgsData = await orgsRes.json();
+                if (orgsData.success) {
+                    document.getElementById('statTotalOrgs').textContent = orgsData.count || 0;
+                    const pending = orgsData.data?.filter(o => o.verificationStatus === 'pending').length || 0;
+                    document.getElementById('statPendingOrgs').textContent = pending;
+                    
+                    // Calculate total raised
+                    const totalRaised = orgsData.data?.reduce((sum, o) => sum + parseFloat(o.totalReceived || 0), 0) || 0;
+                    document.getElementById('statTotalDonations').textContent = '$' + totalRaised.toFixed(2);
+                }
+                
+                // Load donors count
+                const donorsRes = await fetch('api/GetDonors.php');
+                const donorsData = await donorsRes.json();
+                if (donorsData.success) {
+                    document.getElementById('statTotalDonors').textContent = donorsData.count || 0;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // Load Pending Organizations
+        async function loadPendingOrganizations() {
+            const container = document.getElementById('pendingOrgsContent');
+            container.innerHTML = '<p class="loading">Loading pending organizations...</p>';
+            
+            try {
+                const response = await fetch(`api/GetPendingOrganizations.php?adminId=${adminId}`);
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Organization Name</th>
+                                    <th>Email</th>
+                                    <th>Registration #</th>
+                                    <th>Registered</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(org => `
+                                    <tr>
+                                        <td>
+                                            <strong>${escapeHtml(org.name)}</strong>
+                                            ${org.website ? `<br><a href="${escapeHtml(org.website)}" target="_blank" style="font-size: 12px; color: #666;">${escapeHtml(org.website)}</a>` : ''}
+                                        </td>
+                                        <td>${escapeHtml(org.email)}</td>
+                                        <td>${escapeHtml(org.registrationNumber || 'N/A')}</td>
+                                        <td>${formatDate(org.registeredAt)}</td>
+                                        <td>
+                                            <button class="action-btn approve" onclick="openValidationModal('${org.organizationId}', '${escapeHtml(org.name)}', '${escapeHtml(org.email)}', '${escapeHtml(org.registrationNumber || '')}', '${escapeHtml(org.description || '')}', '${escapeHtml(org.address || '')}')">✓ Approve</button>
+                                            <button class="action-btn reject" onclick="openValidationModal('${org.organizationId}', '${escapeHtml(org.name)}', '${escapeHtml(org.email)}', '${escapeHtml(org.registrationNumber || '')}', '${escapeHtml(org.description || '')}', '${escapeHtml(org.address || '')}')">✗ Reject</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = '<p class="no-data">✓ No pending organizations awaiting validation.</p>';
+                }
+            } catch (error) {
+                container.innerHTML = `<p class="message error">Error loading pending organizations: ${error.message}</p>`;
+            }
+        }
+        
+        // Load All Organizations
+        async function loadAllOrganizations() {
+            const container = document.getElementById('orgsContent');
+            container.innerHTML = '<p class="loading">Loading organizations...</p>';
+            
+            try {
+                const response = await fetch('api/GetOrganizations.php');
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Account</th>
+                                    <th>Total Raised</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(org => `
+                                    <tr>
+                                        <td><strong>${escapeHtml(org.name)}</strong></td>
+                                        <td>${escapeHtml(org.email)}</td>
+                                        <td><span class="status-badge ${org.verificationStatus}">${org.verificationStatus}</span></td>
+                                        <td>
+                                            <span class="status-badge ${org.isActive == 1 ? 'approved' : 'rejected'}">
+                                                ${org.isActive == 1 ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td class="amount">$${parseFloat(org.totalReceived || 0).toFixed(2)}</td>
+                                        <td>
+                                            <button class="action-btn ${org.isActive == 1 ? 'reject' : 'approve'}" 
+                                                onclick="toggleUserStatus('${org.userId}', ${org.isActive == 1 ? 'false' : 'true'}, 'organization', '${escapeHtml(org.name)}')">
+                                                ${org.isActive == 1 ? '🚫 Deactivate' : '✅ Activate'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = '<p class="no-data">No organizations found.</p>';
+                }
+            } catch (error) {
+                container.innerHTML = `<p class="message error">Error loading organizations: ${error.message}</p>`;
+            }
+        }
+        
+        // Load All Donors
+        async function loadAllDonors() {
+            const container = document.getElementById('donorsContent');
+            container.innerHTML = '<p class="loading">Loading donors...</p>';
+            
+            try {
+                const response = await fetch('api/GetDonors.php');
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Account</th>
+                                    <th>Total Donations</th>
+                                    <th>Donation Count</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(donor => `
+                                    <tr>
+                                        <td>
+                                            <strong>${escapeHtml(donor.name)}</strong>
+                                            ${donor.isAnonymous == 1 ? ' <span style="font-size: 11px; color: #888;">(Anonymous)</span>' : ''}
+                                        </td>
+                                        <td>${escapeHtml(donor.email)}</td>
+                                        <td>
+                                            <span class="status-badge ${donor.isActive == 1 ? 'approved' : 'rejected'}">
+                                                ${donor.isActive == 1 ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td class="amount">$${parseFloat(donor.totalDonated || 0).toFixed(2)}</td>
+                                        <td>${donor.donationCount || 0}</td>
+                                        <td>
+                                            <button class="action-btn ${donor.isActive == 1 ? 'reject' : 'approve'}" 
+                                                onclick="toggleUserStatus('${donor.userId}', ${donor.isActive == 1 ? 'false' : 'true'}, 'donor', '${escapeHtml(donor.name)}')">
+                                                ${donor.isActive == 1 ? '🚫 Deactivate' : '✅ Activate'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = '<p class="no-data">No donors found.</p>';
+                }
+            } catch (error) {
+                container.innerHTML = `<p class="message error">Error loading donors: ${error.message}</p>`;
+            }
+        }
+        
+        // Toggle User Status (Activate/Deactivate)
+        async function toggleUserStatus(userId, isActive, userType, userName) {
+            const action = isActive ? 'activate' : 'deactivate';
+            if (!confirm(`Are you sure you want to ${action} ${userType} "${userName}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('api/UpdateUserStatus.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        adminId: adminId,
+                        userId: userId,
+                        isActive: isActive
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`${userType.charAt(0).toUpperCase() + userType.slice(1)} "${userName}" has been ${action}d successfully.`);
+                    // Refresh the appropriate list
+                    if (userType === 'organization') {
+                        loadAllOrganizations();
+                    } else if (userType === 'donor') {
+                        loadAllDonors();
+                    }
+                    loadStats();
+                } else {
+                    alert(`Failed to ${action} user: ${result.message}`);
+                }
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+        
+        // Load Leaderboards
+        async function loadLeaderboards() {
+            // Load donor leaderboard
+            const donorContainer = document.getElementById('donorLeaderboardContent');
+            donorContainer.innerHTML = '<p class="loading">Loading...</p>';
+            
+            try {
+                const donorRes = await fetch('api/GetLeaderboard.php?type=donors&limit=10');
+                const donorData = await donorRes.json();
+                
+                if (donorData.success && donorData.data.length > 0) {
+                    donorContainer.innerHTML = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Donor</th>
+                                    <th>Total Donated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${donorData.data.map(donor => `
+                                    <tr>
+                                        <td>
+                                            <span class="rank-badge ${getRankClass(donor.rank)}">${donor.rank}</span>
+                                        </td>
+                                        <td>${escapeHtml(donor.displayName)}</td>
+                                        <td class="amount">$${parseFloat(donor.totalDonated).toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    donorContainer.innerHTML = '<p class="no-data">No donor data available.</p>';
+                }
+            } catch (error) {
+                donorContainer.innerHTML = `<p class="message error">Error: ${error.message}</p>`;
+            }
+            
+            // Load organization leaderboard
+            const orgContainer = document.getElementById('orgLeaderboardContent');
+            orgContainer.innerHTML = '<p class="loading">Loading...</p>';
+            
+            try {
+                const orgRes = await fetch('api/GetLeaderboard.php?type=organizations&limit=10');
+                const orgData = await orgRes.json();
+                
+                if (orgData.success && orgData.data.length > 0) {
+                    orgContainer.innerHTML = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Organization</th>
+                                    <th>Total Raised</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${orgData.data.map(org => `
+                                    <tr>
+                                        <td>
+                                            <span class="rank-badge ${getRankClass(org.rank)}">${org.rank}</span>
+                                        </td>
+                                        <td>${escapeHtml(org.name)}</td>
+                                        <td class="amount">$${parseFloat(org.totalReceived).toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    orgContainer.innerHTML = '<p class="no-data">No organization data available.</p>';
+                }
+            } catch (error) {
+                orgContainer.innerHTML = `<p class="message error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Validation Modal
+        function openValidationModal(orgId, name, email, regNumber, description, address) {
+            selectedOrg = { organizationId: orgId, name, email, regNumber, description, address };
+            document.getElementById('modalTitle').textContent = `Validate: ${name}`;
+            document.getElementById('modalOrgDetails').innerHTML = `
+                <div class="org-details">
+                    <p><strong>Organization:</strong> ${escapeHtml(name)}</p>
+                    <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+                    <p><strong>Registration #:</strong> ${escapeHtml(regNumber || 'N/A')}</p>
+                    <p><strong>Address:</strong> ${escapeHtml(address || 'N/A')}</p>
+                    <p><strong>Description:</strong> ${escapeHtml(description || 'No description provided')}</p>
+                </div>
+            `;
+            document.getElementById('validationRemarks').value = '';
+            document.getElementById('validationModal').classList.add('active');
+        }
+        
+        function closeValidationModal() {
+            document.getElementById('validationModal').classList.remove('active');
+            selectedOrg = null;
+        }
+        
+        async function processValidation(action) {
+            if (!selectedOrg) return;
+            
+            const remarks = document.getElementById('validationRemarks').value;
+            const messageDiv = document.getElementById('validationMessage');
+            
+            try {
+                const response = await fetch('api/ValidateOrganization.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        adminId: adminId,
+                        organizationId: selectedOrg.organizationId,
+                        action: action,
+                        remarks: remarks
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    messageDiv.innerHTML = `<div class="message success">${result.message}</div>`;
+                    closeValidationModal();
+                    loadPendingOrganizations();
+                    loadStats();
+                } else {
+                    messageDiv.innerHTML = `<div class="message error">${result.message}</div>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Utility Functions
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            return new Date(dateStr).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+        
+        function getRankClass(rank) {
+            if (rank === 1) return 'rank-1';
+            if (rank === 2) return 'rank-2';
+            if (rank === 3) return 'rank-3';
+            return 'rank-other';
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadPendingOrganizations();
+        });
+    </script>
+</body>
+</html>

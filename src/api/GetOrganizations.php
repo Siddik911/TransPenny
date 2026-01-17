@@ -14,10 +14,14 @@ require_once __DIR__ . '/../config/database.php';
 try {
     $db = getDBConnection();
     
+    // Check if we should include inactive organizations (for admin view)
+    $includeInactive = isset($_GET['includeInactive']) && $_GET['includeInactive'] === 'true';
+    
     // Get all organizations with user info
-    $stmt = $db->prepare("
+    $sql = "
         SELECT 
             o.organizationId,
+            o.userId,
             o.verificationStatus,
             o.registrationNumber,
             o.website,
@@ -25,14 +29,23 @@ try {
             o.totalReceived,
             o.availableBalance,
             o.registeredAt,
+            o.address,
             u.name,
             u.email,
-            u.phoneNumber
+            u.phoneNumber,
+            u.isActive
         FROM Organization o
         INNER JOIN User u ON o.userId = u.userId
-        WHERE u.isActive = TRUE
-        ORDER BY o.registeredAt DESC
-    ");
+    ";
+    
+    if (!$includeInactive) {
+        // By default, show all organizations but include isActive status for admin
+        // Admins can see all, regular users only see active
+    }
+    
+    $sql .= " ORDER BY o.registeredAt DESC";
+    
+    $stmt = $db->prepare($sql);
     $stmt->execute();
     $organizations = $stmt->fetchAll();
     

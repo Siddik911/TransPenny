@@ -1,0 +1,174 @@
+erDiagram
+    User ||--o{ Donor : "is-a"
+    User ||--o{ Organization : "is-a"
+    User ||--o{ Admin : "is-a"
+    
+    Donor ||--o{ Donation : "makes"
+    Organization ||--o{ Donation : "receives"
+    Organization ||--o{ ImpactStory : "publishes"
+    Organization ||--o{ Withdrawal : "makes"
+    
+    Donation ||--o{ DonationAllocation : "split-into"
+    DonationAllocation }o--|| Beneficiary : "benefits"
+    DonationAllocation }o--|| ImpactStory : "funds"
+    DonationAllocation }o--|| Withdrawal : "from"
+    
+    Admin ||--o{ AuditLog : "performs"
+    Organization ||--o{ VerificationHistory : "has"
+    Donor ||--o{ DonorRanking : "ranked-in"
+    Organization ||--o{ OrganizationRanking : "ranked-in"
+
+    User {
+        UUID userId PK
+        String email UK "UNIQUE, NOT NULL"
+        String passwordHash "NOT NULL"
+        String name "NOT NULL"
+        ENUM userType "donor|organization|admin"
+        DateTime createdAt "DEFAULT CURRENT_TIMESTAMP"
+        DateTime lastLoginAt
+        Boolean isActive "DEFAULT TRUE"
+        String phoneNumber
+    }
+
+    Donor {
+        UUID donorId PK
+        UUID userId FK "REFERENCES User(userId)"
+        Boolean isAnonymous "DEFAULT FALSE"
+        Decimal totalDonated "DEFAULT 0.00"
+        Integer donationCount "DEFAULT 0"
+        DateTime lastDonationAt
+    }
+
+    Organization {
+        UUID organizationId PK
+        UUID userId FK "REFERENCES User(userId)"
+        ENUM verificationStatus "pending|approved|rejected"
+        String registrationNumber UK
+        String address
+        String website
+        Text description
+        Decimal totalReceived "DEFAULT 0.00"
+        Decimal totalSpent "DEFAULT 0.00"
+        Decimal availableBalance "DEFAULT 0.00"
+        DateTime verifiedAt
+        DateTime registeredAt
+    }
+
+    Admin {
+        UUID adminId PK
+        UUID userId FK "REFERENCES User(userId)"
+        ENUM role "super_admin|finance_admin|support_admin"
+        DateTime assignedAt
+    }
+
+    Donation {
+        UUID donationId PK
+        UUID donorId FK "REFERENCES Donor(donorId)"
+        UUID organizationId FK "REFERENCES Organization(organizationId)"
+        Decimal amountTotal "NOT NULL, CHECK > 0"
+        Decimal amountAllocated "DEFAULT 0.00"
+        ENUM status "allocated|partially_spent|fully_spent"
+        ENUM paymentMethod "card|bank|mobile_money"
+        String transactionReference UK
+        DateTime donatedAt "DEFAULT CURRENT_TIMESTAMP"
+        Boolean isRecurring "DEFAULT FALSE"
+    }
+
+    DonationAllocation {
+        UUID allocationId PK
+        UUID donationId FK "REFERENCES Donation(donationId)"
+        UUID beneficiaryId FK "REFERENCES Beneficiary(beneficiaryId)"
+        UUID impactStoryId FK "REFERENCES ImpactStory(impactStoryId)"
+        UUID withdrawalId FK "REFERENCES Withdrawal(withdrawalId)"
+        Decimal amountSpent "NOT NULL, CHECK > 0"
+        String purpose "NOT NULL"
+        DateTime spentAt "DEFAULT CURRENT_TIMESTAMP"
+        String proofUrl
+        ENUM status "pending|completed|verified"
+    }
+
+    Beneficiary {
+        UUID beneficiaryId PK
+        UUID organizationId FK "REFERENCES Organization(organizationId)"
+        String name "NOT NULL"
+        ENUM type "individual|group|community|project"
+        String location "NOT NULL"
+        Text description
+        String geoCoordinates "lat,lng"
+        Integer allocationCount "DEFAULT 0"
+        Decimal totalReceived "DEFAULT 0.00"
+        DateTime createdAt "DEFAULT CURRENT_TIMESTAMP"
+        Boolean isActive "DEFAULT TRUE"
+    }
+
+    ImpactStory {
+        UUID storyId PK
+        UUID organizationId FK "REFERENCES Organization(organizationId)"
+        String title "NOT NULL"
+        Text content "NOT NULL"
+        String mediaUrl
+        ENUM mediaType "image|video|document"
+        String geoTag
+        Decimal totalFunding "DEFAULT 0.00"
+        Integer allocationCount "DEFAULT 0"
+        DateTime publishedAt "DEFAULT CURRENT_TIMESTAMP"
+        Boolean isPublished "DEFAULT FALSE"
+        Integer viewCount "DEFAULT 0"
+    }
+
+    Withdrawal {
+        UUID withdrawalId PK
+        UUID organizationId FK "REFERENCES Organization(organizationId)"
+        Decimal amount "NOT NULL, CHECK > 0"
+        ENUM status "pending|approved|rejected|completed"
+        String bankAccountNumber
+        String purpose "NOT NULL"
+        DateTime requestedAt "DEFAULT CURRENT_TIMESTAMP"
+        DateTime processedAt
+        UUID processedBy FK "REFERENCES Admin(adminId)"
+        String remarks
+    }
+
+    VerificationHistory {
+        UUID verificationId PK
+        UUID organizationId FK "REFERENCES Organization(organizationId)"
+        UUID reviewedBy FK "REFERENCES Admin(adminId)"
+        ENUM previousStatus
+        ENUM newStatus
+        Text remarks
+        DateTime reviewedAt "DEFAULT CURRENT_TIMESTAMP"
+    }
+
+    AuditLog {
+        UUID logId PK
+        UUID adminId FK "REFERENCES Admin(adminId)"
+        ENUM actionType "create|update|delete|approve|reject"
+        String entityType "donor|organization|donation|withdrawal"
+        UUID entityId
+        Text description
+        JSON changeDetails
+        DateTime performedAt "DEFAULT CURRENT_TIMESTAMP"
+    }
+
+    DonorRanking {
+        UUID rankingId PK
+        UUID donorId FK "REFERENCES Donor(donorId)"
+        Integer rank
+        Decimal totalAmount
+        ENUM period "daily|weekly|monthly|yearly|all_time"
+        Date periodStart
+        Date periodEnd
+        DateTime calculatedAt
+    }
+
+    OrganizationRanking {
+        UUID rankingId PK
+        UUID organizationId FK "REFERENCES Organization(organizationId)"
+        Integer rank
+        Decimal totalSpent
+        Decimal impactScore
+        ENUM period "daily|weekly|monthly|yearly|all_time"
+        Date periodStart
+        Date periodEnd
+        DateTime calculatedAt
+    }
