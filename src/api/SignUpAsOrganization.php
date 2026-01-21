@@ -76,6 +76,10 @@ try {
     ]);
     
     // Insert into Organization table
+    // Convert empty strings to null for optional UNIQUE fields
+    $registrationNumber = !empty($input['registrationNumber']) ? $input['registrationNumber'] : null;
+    $website = !empty($input['website']) ? $input['website'] : null;
+    
     $stmt = $db->prepare("
         INSERT INTO Organization (
             organizationId, userId, verificationStatus, registrationNumber, 
@@ -86,9 +90,9 @@ try {
     $stmt->execute([
         $organizationId,
         $userId,
-        $input['registrationNumber'] ?? null,
+        $registrationNumber,
         $input['address'],
-        $input['website'] ?? null,
+        $website,
         $input['description']
     ]);
     

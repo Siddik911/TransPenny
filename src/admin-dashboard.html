@@ -159,7 +159,6 @@
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('validation')">⏳ Pending Validations</button>
-            <button class="tab-btn" onclick="showTab('withdrawals')">💳 Withdrawals</button>
             <button class="tab-btn" onclick="showTab('organizations')">🏢 Organizations</button>
             <button class="tab-btn" onclick="showTab('donors')">👥 Donors</button>
             <button class="tab-btn" onclick="showTab('leaderboard')">🏆 Leaderboard</button>
@@ -172,26 +171,6 @@
                 <div id="validationMessage"></div>
                 <div id="pendingOrgsContent">
                     <p class="loading">Loading pending organizations...</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Withdrawals Tab -->
-        <div id="withdrawalsTab" class="tab-content">
-            <div class="info-card">
-                <h3>💳 Withdrawal Requests</h3>
-                <div style="margin-bottom: 15px;">
-                    <label style="margin-right: 10px;">Filter:</label>
-                    <select id="withdrawalStatusFilter" onchange="loadWithdrawals()" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="all">All</option>
-                    </select>
-                </div>
-                <div id="withdrawalMessage"></div>
-                <div id="withdrawalsContent">
-                    <p class="loading">Loading withdrawals...</p>
                 </div>
             </div>
         </div>
@@ -282,110 +261,9 @@
             
             // Load data for the tab
             if (tabName === 'validation') loadPendingOrganizations();
-            else if (tabName === 'withdrawals') loadWithdrawals();
             else if (tabName === 'organizations') loadAllOrganizations();
             else if (tabName === 'donors') loadAllDonors();
             else if (tabName === 'leaderboard') loadLeaderboards();
-        }
-        
-        // Load Withdrawals
-        async function loadWithdrawals() {
-            const container = document.getElementById('withdrawalsContent');
-            container.innerHTML = '<p class="loading">Loading withdrawals...</p>';
-            
-            const status = document.getElementById('withdrawalStatusFilter').value;
-            
-            try {
-                const response = await fetch(`api/GetPendingWithdrawals.php?adminId=${adminId}&status=${status}`);
-                const data = await response.json();
-                
-                if (data.success && data.data.length > 0) {
-                    container.innerHTML = `
-                        <div style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                            <strong>Summary:</strong> 
-                            Pending: $${data.summary.totalPending.toFixed(2)} | 
-                            Approved: $${data.summary.totalApproved.toFixed(2)} | 
-                            Rejected: $${data.summary.totalRejected.toFixed(2)}
-                        </div>
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Organization</th>
-                                    <th>Amount</th>
-                                    <th>Purpose</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${data.data.map(w => `
-                                    <tr>
-                                        <td>${formatDate(w.requestedAt)}</td>
-                                        <td>
-                                            <strong>${escapeHtml(w.organizationName)}</strong>
-                                            <br><small style="color: #888;">${escapeHtml(w.organizationEmail)}</small>
-                                        </td>
-                                        <td class="amount">$${parseFloat(w.amount).toFixed(2)}</td>
-                                        <td>${escapeHtml(w.purpose.substring(0, 40))}${w.purpose.length > 40 ? '...' : ''}</td>
-                                        <td><span class="status-badge ${w.status}">${w.status}</span></td>
-                                        <td>
-                                            ${w.status === 'pending' ? `
-                                                <button class="action-btn approve" onclick="processWithdrawal('${w.withdrawalId}', 'approve', '${escapeHtml(w.organizationName)}', ${w.amount})">✓ Approve</button>
-                                                <button class="action-btn reject" onclick="processWithdrawal('${w.withdrawalId}', 'reject', '${escapeHtml(w.organizationName)}', ${w.amount})">✗ Reject</button>
-                                            ` : `
-                                                <small style="color: #888;">
-                                                    ${w.processedByName ? 'By: ' + escapeHtml(w.processedByName) : ''}
-                                                    ${w.processedAt ? '<br>' + formatDate(w.processedAt) : ''}
-                                                </small>
-                                            `}
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                } else {
-                    container.innerHTML = `<p class="no-data">No ${status === 'all' ? '' : status + ' '}withdrawals found.</p>`;
-                }
-            } catch (error) {
-                container.innerHTML = `<p class="message error">Error loading withdrawals: ${error.message}</p>`;
-            }
-        }
-        
-        // Process Withdrawal (Approve/Reject)
-        async function processWithdrawal(withdrawalId, action, orgName, amount) {
-            const actionText = action === 'approve' ? 'approve' : 'reject';
-            const remarks = prompt(`Enter remarks for ${actionText}ing withdrawal of $${amount.toFixed(2)} from ${orgName}:`, '');
-            
-            if (remarks === null) return; // User cancelled
-            
-            const messageDiv = document.getElementById('withdrawalMessage');
-            
-            try {
-                const response = await fetch('api/ProcessWithdrawal.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        adminId: adminId,
-                        withdrawalId: withdrawalId,
-                        action: action,
-                        remarks: remarks
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    messageDiv.innerHTML = `<div class="message success">${result.message}</div>`;
-                    loadWithdrawals();
-                    loadStats();
-                } else {
-                    messageDiv.innerHTML = `<div class="message error">${result.message}</div>`;
-                }
-            } catch (error) {
-                messageDiv.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
-            }
         }
         
         // Load Stats
