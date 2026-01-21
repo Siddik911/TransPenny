@@ -198,7 +198,7 @@
         <!-- Withdrawals Tab -->
         <div id="withdrawalsTab" class="tab-content">
             <div class="info-card">
-                <h3>💳 Request Withdrawal</h3>
+                <h3>💳 Make Withdrawal</h3>
                 <div id="withdrawalMessage"></div>
                 
                 <div class="balance-display">
@@ -230,7 +230,7 @@
                             Linking a withdrawal to an impact story helps donors see how their contributions are being used.
                         </small>
                     </div>
-                    <button type="submit" class="btn btn-success" id="withdrawBtn">Request Withdrawal</button>
+                    <button type="submit" class="btn btn-success" id="withdrawBtn">Make Withdrawal</button>
                 </form>
             </div>
             
@@ -461,7 +461,6 @@
                                     <th>Date</th>
                                     <th>Amount</th>
                                     <th>Purpose</th>
-                                    <th>Status</th>
                                     <th>Bank Account</th>
                                 </tr>
                             </thead>
@@ -471,7 +470,6 @@
                                         <td>${new Date(w.requestedAt).toLocaleDateString()}</td>
                                         <td class="amount">$${parseFloat(w.amount).toFixed(2)}</td>
                                         <td>${w.purpose.substring(0, 50)}${w.purpose.length > 50 ? '...' : ''}</td>
-                                        <td><span class="status-badge ${w.status}">${w.status}</span></td>
                                         <td>${w.bankAccountNumber || 'N/A'}</td>
                                     </tr>
                                 `).join('')}
